@@ -1,0 +1,484 @@
+  <div key-press *ngIf="!mobile" (onKeyPress)='handleKeyboardEvent($event)'></div><!--*ngIf="!mobile || wideview" -->
+
+  <div class="font" style="color: white; padding-left: 5vw; padding-top: 5vh">
+  <i
+    ><span class="title"
+      ><b>L</b>azy
+     
+      <b>C</b>hess
+
+
+ 
+<span class="stars" *ngIf="stars>0 && mobile" (click)="starPrompt()" style="font-size:2vh;position: absolute; right: 15vw; top: 6.5vh">
+  <b>{{this.stars>30?30:this.stars}}</b> <ion-icon style="color:#ffd74a" name="md-star"></ion-icon>
+</span>
+
+<div style="font-size:2vh;position: absolute; right: 10vw; top: 8vh">
+  <span style="border-bottom:1px solid white" class="grow showIT animated flash" *ngIf="wideview && currOpening.w" (click)="lookupOpening(currOpening.w)">
+<img style="vertical-align:bottom;width:3vh" [src]="'assets/pieces/alpha/bP.svg'"><b>{{currOpening.w.eco}}:{{currOpening.w.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
+</span>
+<span style="margin-left:5vw;border-bottom:1px solid white" class="grow showIT animated flash" *ngIf="wideview && currOpening.b" (click)="lookupOpening(currOpening.b)">
+  <img style="vertical-align:bottom;width:3vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.b.eco}}:{{currOpening.b.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
+</span>
+
+</div>
+
+      <span style="font-size: 1.5vh"
+        ><b>{{numChoices}}</b> moves,
+        <span [hidden]="delayTime>0" style="font-size:3vh;position:absolute;margin-left:1vw;margin-top:2.5vh"><ion-icon name="ios-shuffle"></ion-icon></span>
+        <span [hidden]="delayTime==0"><b>{{this.delayTime/1000 +.3}}</b> sec</span>
+      </span></span>
+
+    <div
+      *ngIf="!playersTurn"
+      style="
+        position: absolute;
+        width: 100vw;
+        height: 67vh;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      "
+    >
+      <div style="text-align: center; padding-top: 30vh; font-size: 2.5vh">
+        <ion-spinner class="spin"></ion-spinner><br />
+        <div *ngIf="timerVal>0" style="margin-top: 15vh; font-size: 3.5vh">
+          Your opponent will take <b>{{timerVal}}</b> more seconds
+          <b>at most</b>.
+        </div>
+      </div>
+    </div>
+
+    <ion-icon
+      menuToggle
+      class="menuicon grow"
+      style="position: absolute; right: 4vw; top: 5vh"
+      name="ios-menu-outline"
+    >
+    </ion-icon>
+
+    <!---->
+
+    <img
+      src="assets/633869.svg"
+      class="animateSlow pulse infinite"
+      *ngIf="tapPrompt && mobile && record.wins==0"
+      style="
+        position: absolute;
+        z-index: 999;
+        margin: auto;
+        left: 0;
+        right: 0;
+        bottom: 15vh;
+        top: 0;
+        width: 25vh;
+        pointer-events: none;
+        opacity: 0.7;
+      "
+    />
+
+    <div [hidden]="timerVal==0 || !playersTurn" [ngStyle]="{'opacity':(30-timerVal)*(30-timerVal)/1400}" class="timer">{{timerVal}}</div>
+    <!-- -->
+
+    <ng2-chessboard
+      *ngIf="boardVisable"
+      [ngClass]="{'opacity':!playersTurn}"
+      (click)="prevToggle()"
+      #board
+      [position]="position"
+      [orientation]="whiteBottom"
+      [showNotation]="true"
+      [draggable]="false"
+      [animation]="true"
+      [pieceTheme]="pieceTheme"
+    >
+    </ng2-chessboard>
+
+    <div [hidden]="!wideview" *ngIf="mobile==false" class="split">
+<div [hidden]="moveHistory.length!==0">
+<img src="assets/imgs/art.png" style="width:100%">
+
+<!--
+<div style="width:100%;overflow:hidden">
+<img src="assets/imgs/icon.png" style="width:20vh;padding:2vh;float:left;display:inline-block">
+
+<div style="padding-top:2vh;padding-right:2vh"> <b>Welcome to Lazy Chess, a <u>non-profit</u> chess puzzle that tries to innovate the game and reduce the intimidation factor for self-concious players. </b>
+</div>
+</div>
+<hr>
+-->
+<div style="font-size:3vh;padding:2vh;text-align:center">Cycle between your <b>{{numChoicesTxt}}</b> best moves by clicking on the board or using <span class="grow" (click)="keyboardShortcuts()" style="border-bottom:1px solid white">
+  <b>Keyboard Shorcuts</b> <ion-icon name="md-open"></ion-icon>
+</span></div>
+
+
+<a class="twitter-timeline" data-dnt="true" data-theme="dark" href="https://twitter.com/LazyChessGame?ref_src=twsrc%5Etfw">Tweets by LazyChessGame</a>
+
+
+
+
+
+</div>
+
+<div class="splitFont1" *ngFor="let move of moveHistory;let i=index" [ngClass]="{'highlighted':highlighted==i}">
+      <div (click)="showOldState(move,i)" class="grow" style="display:inline-block">
+     <span class="splitFont2">&nbsp;&nbsp;<span *ngIf="moveHistory.length-i<10">&nbsp;</span>{{moveHistory.length-i}}.</span><img style="vertical-align:bottom;width:40px" [src]="'assets/pieces/alpha/'+move.color+move.piece+'.svg'">{{move.from}}<b>{{move.dest}}</b> <ion-icon *ngIf="move.best" style="color:#ffd74a" name="md-star"></ion-icon>
+     <!--
+     <span style="padding-left:2vw;font-size:2vh">{{move.fen | slice:1:60}}...</span>-->
+</div>
+<div (click)="pgnExt(move.pgn)" class="grow" style="float:right;padding-right:2vw;margin-top:1.4vh">
+      <span class="splitFont1">{{move.adv!=='0'?move.adv +' &nbsp;':'tie &nbsp;'}}</span> 
+    <ion-icon style="font-size:18px" name="md-open" class="splitFont1"></ion-icon>
+</div>
+
+    </div>
+    <div *ngIf="moveHistory.length>0"style="padding-top:1vh;text-align:right;padding-right:1vw">
+<span class="grow" (click)="keyboardShortcuts()" style="opacity:.8;border-bottom:1px solid white">
+  <b>Keyboard Shorcuts</b> <ion-icon name="md-open"></ion-icon>
+</span>
+</div>
+    </div>
+
+<div *ngIf="wideview && !mobile" class="mediaBtns">
+
+  <span (click)="openLink('https://www.twitch.tv/cinqmarsmedia/')" class="grow">
+  Twitch
+<img style="width:5vh;margin-left:.5vw;margin-right:2vw;vertical-align:middle" src="assets/imgs/twitch.svg">
+</span>
+
+  <span (click)="openLink('https://discord.com/invite/fwkMQCnk2R')" class="grow">
+  Discord
+<img style="width:5vh;margin-left:.5vw;vertical-align:middle" src="assets/imgs/discord.svg">
+</span>
+
+  <span (click)="openLink('https://github.com/cinqmarsmedia/')" class="grow github" style="margin-left:2vw">
+  GitHub
+<img style="width:5vh;margin-left:.5vw;vertical-align:middle" src="assets/imgs/github.svg">
+</span>
+
+</div>
+    <div>
+
+
+
+
+
+
+
+      <div *ngIf="!wideview" [ngClass]="{'bound':record.wins>0,'boundplus':record.wins==0}">
+
+
+        <div class="display animated infinite">
+
+<span *ngIf="record.wins>0" [hidden]="flashResult && mode!=='allRand'">
+
+<span (click)="cp()" >
+<b><span [hidden]="centipawns<=0 || centipawns=='∞'">+</span>{{!newboardgamestate?centipawns:'0.3'}}</b> 
+
+<!--
+<ion-icon
+              style="font-size: 2.8vh; vertical-align:middle;padding-left: 1vw"
+              name="ios-compass-outline"
+            ></ion-icon>-->
+            <img style="vertical-align:middle;padding-bottom:.2vh;width:2.1vh" src="assets/633839.svg">
+</span>
+
+
+
+            &nbsp;&nbsp;&nbsp;&nbsp;
+<span [ngClass]="{'animated pulse infinite':currDepth==0}" (click)="dpth()">       
+<ion-icon style="font-size: 2.8vh; vertical-align:middle;padding-left: 1vw"
+              name="md-arrow-round-down"
+            ></ion-icon><b> {{mode=="allRand"?0:currDepth}}</b>
+</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<span (click)="hdnicp()"> 
+<img style="vertical-align:middle;padding-bottom:.5vh;width:2.1vh" src="assets/992668.svg">
+<b>{{handicap}}</b>
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span [ngClass]="{'half':moveHistory.length==0}" (click)="history()"> 
+<img style="vertical-align:middle;padding-bottom:.6vh;width:2.4vh" src="assets/61122.svg">
+<b>{{moveHistory.length}}</b>
+</span>&nbsp;
+            <!--analyze: <ion-icon
+              style="font-size: 2.8vh; padding-left: 1vw"
+              name="md-open"
+            ></ion-icon>-->
+          </span>
+
+
+          <span (click)="guide()" *ngIf="record.wins==0" [hidden]="flashResult">
+            <b>Tap</b> on the board to
+            <span [ngClass]="{'flash':finalChoices[selected]}"
+              ><b>cycle</b></span
+            >
+            between your <b>{{numChoicesTxt}}</b> <span *ngIf="mode=='nBest'">best</span> moves
+            <ion-icon
+              style="font-size: 2.8vh; vertical-align:middle;padding-left: 1vw"
+              name="help-circle"
+            ></ion-icon>
+          </span>
+
+        
+
+          <div *ngIf="lastchoice.move && flashResult && mode!=='allRand'" class="dynPad">
+            <b>{{lastchoice.move}}</b> was
+            <span *ngIf="lastchoice.rank==1">your <b>best</b> move</span>
+            
+
+            <span
+              *ngIf="lastchoice.rank==2"
+              >your <b>2nd</b> best move</span
+            >
+
+            <span *ngIf="lastchoice.rank==3"
+              >your <b>3rd</b> best move</span
+            >
+           
+
+            <span *ngIf="lastchoice.rank>3"
+              >your <b>{{lastchoice.rank}}th</b> best move</span
+            >
+
+            <span *ngIf="lastchoice.rank==0"
+              >a <b>random</b> move</span>
+
+          <span *ngIf="lastchoice.rank==-1"
+              >a <b>great</b> opening</span>
+
+            <span
+              *ngIf="lastchoice.rank/numChoices<=.5 && lastchoice.rank!==0"
+              style="font-style: normal !important"
+              >{{goodMoji[randNum % goodMoji.length]}}</span
+            >
+
+            <span
+              *ngIf="lastchoice.rank/numChoices>.5 || lastchoice.rank==0"
+              style="font-style: normal !important"
+              >{{badMoji[randNum%badMoji.length]}}</span
+            >
+          </div>
+        </div>
+
+        <button
+          large
+          full
+          style="height: 8vh"
+          color="light"
+          (click)="makeMove()"
+          ion-button
+        >
+        <span *ngIf="thinking && playersTurn">Please Wait</span>
+          <span *ngIf="!playersTurn">Waiting for Opponent</span>
+          <span *ngIf="!thinking && finalChoices[selected] && playersTurn">
+            confirm <b>{{finalChoices[selected].choice}}</b>
+            <sup style="font-size: 2.1vh"
+              >{{selected+1}} of {{finalChoices.length}}</sup
+            ></span
+          >
+          <span
+            *ngIf="!finalChoices[selected] && !lastchoice.move && playersTurn && !thinking && newboardgamestate"
+          >
+            Start Game</span
+          >
+          <span
+            *ngIf="!finalChoices[selected] && !lastchoice.move && playersTurn && !thinking && !newboardgamestate"
+          >
+            Resume Game</span
+          >
+          <!---->
+        </button>
+
+
+<div style="
+            position:absolute;bottom:.5vh;font-size:2.2vh;left:0;right:0;margin-left:auto;margin-right:auto;padding-left:3vw;padding-right:3vw
+          ">
+<span style="border-bottom:1px solid white" class="grow showIT animated flash" *ngIf="currOpening.b || currOpening.w" (click)="lookupOpening(currOpening.b)">
+  <span *ngIf="currOpening.b" >
+  <img style="vertical-align:bottom;width:3.5vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.b.eco}}:{{currOpening.b.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
+</span>
+<span *ngIf="!currOpening.b && currOpening.w" >
+ <img style="vertical-align:bottom;width:3.5vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.w.eco}}:{{currOpening.w.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
+</span>
+</span>
+</div>
+
+        <div
+          (click)="showStats(true)"
+          [ngClass]="{'showIT animated flash':moveHistory.length!==1 && record.total!==0 && !currOpening.b && !currOpening.w}"
+          style="
+            text-align: center;
+            width: 100%;
+            opacity:0;
+            font-size: 2.2vh;
+            line-height: 2.8vh;
+            padding-top: 1vh;
+          "
+        >
+          Best:
+          <b>{{Math.floor(record.best/(record.total==0?1:record.total)*100)}}</b
+          >% &nbsp;&nbsp;&nbsp;Elo:
+          <b
+            >{{elo}}</b
+          > &nbsp;&nbsp;&nbsp;Moves:
+          <b>{{record.total | number:'1.0':'en-US'}}</b>
+          &nbsp;&nbsp;&nbsp;<br />
+          Wins: <b>{{record.wins}}</b> &nbsp;&nbsp;&nbsp;Losses:
+          <b>{{record.losses}}</b> &nbsp;&nbsp;&nbsp;Rank:
+          <b>{{percent}}</b>%
+
+        </div>
+      </div>
+<!--wideview-->
+ <div *ngIf="wideview && !mobile" style="position:absolute;left:calc(31vw - 35vh);bottom:2.5vh;width:100vw">
+
+
+        <div style="display:inline-block;padding-right:3vw" class="displaytwo animated infinite">
+
+<span [hidden]="flashResult && mode!=='allRand'">
+
+<span (click)="cp()" >
+<b><span [hidden]="centipawns<=0 || centipawns=='∞'">+</span>{{!newboardgamestate?centipawns:'0.3'}}</b>
+
+<!--<ion-icon
+              style="font-size: 2.8vh; vertical-align:middle;padding-left: 1vw"
+              name="help-circle"
+            ></ion-icon>
+          -->
+           <img style="vertical-align:middle;padding-bottom:.3vh;width:2.4vh" src="assets/633839.svg">
+</span>
+
+
+
+            &nbsp;&nbsp;&nbsp;&nbsp;
+<span [ngClass]="{'animated pulse infinite':currDepth==0}" (click)="dpth()">       
+<ion-icon style="font-size: 2.8vh; vertical-align:middle;padding-left: 1vw"
+              name="md-arrow-round-down"
+            ></ion-icon><b> {{mode=="allRand"?0:currDepth}}</b>
+</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<span (click)="hdnicp()"> 
+<img style="vertical-align:middle;padding-bottom:.5vh;width:2.1vh" src="assets/992668.svg">
+<b>{{handicap}}</b>
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span [ngClass]="{'half':moveHistory.length==0}" (click)="history()"> 
+<img style="vertical-align:middle;padding-bottom:.6vh;width:2.4vh" src="assets/61122.svg">
+<b>{{moveHistory.length}}</b>
+</span>&nbsp;
+            <!--analyze: <ion-icon
+              style="font-size: 2.8vh; padding-left: 1vw"
+              name="md-open"
+            ></ion-icon>-->
+          </span>
+
+
+       
+
+        
+
+          <div *ngIf="lastchoice.move && flashResult && mode!=='allRand'" class="dynPad">
+            <b>{{lastchoice.move}}</b> was
+            <span *ngIf="lastchoice.rank==1">your <b>best</b></span>
+            
+
+            <span
+              *ngIf="lastchoice.rank==2"
+              >your <b>2nd</b> best</span
+            >
+
+            <span *ngIf="lastchoice.rank==3"
+              >your <b>3rd</b> best</span
+            >
+           
+
+            <span *ngIf="lastchoice.rank>3"
+              >your <b>{{lastchoice.rank}}th</b> best</span
+            >
+
+            <span *ngIf="lastchoice.rank==0"
+              >a <b>random</b></span>
+
+          
+ move
+            <span
+              *ngIf="lastchoice.rank/numChoices<=.5 && lastchoice.rank!==0"
+              style="font-style: normal !important"
+              >{{goodMoji[randNum % goodMoji.length]}}</span
+            >
+
+            <span
+              *ngIf="lastchoice.rank/numChoices>.5 || lastchoice.rank==0"
+              style="font-style: normal !important"
+              >{{badMoji[randNum%badMoji.length]}}</span
+            >
+          </div>
+        </div>
+<!---->
+        <button
+          style="height:5vh;margin-top:-2vh;font-size:2.5vh !important;width:28vh"
+          color="light"
+          (click)="makeMove()"
+          ion-button
+        >
+        <span *ngIf="thinking && playersTurn">Please Wait</span>
+          <span *ngIf="!playersTurn">Waiting for Opponent</span>
+          <span *ngIf="!thinking && finalChoices[selected] && playersTurn">
+            confirm <b>{{finalChoices[selected].choice}}</b>
+            <sup style="font-size: 1.8vh"
+              >{{selected+1}} of {{finalChoices.length}}</sup
+            ></span
+          >
+          <span
+            *ngIf="!finalChoices[selected] && !lastchoice.move && playersTurn && !thinking && newboardgamestate"
+          >
+            Start Game</span
+          >
+          <span
+            *ngIf="!finalChoices[selected] && !lastchoice.move && playersTurn && !thinking && !newboardgamestate"
+          >
+            Resume Game</span
+          >
+
+        </button>
+     
+
+    </div>
+    <div *ngIf="wideview && !mobile"
+          (click)="showStats()"
+          [ngClass]="{'showIT animated flash':record.total>0}"
+          style="
+            text-align:center;
+            position:absolute;
+            opacity:0;
+            right:4vw;
+            bottom:3vh;
+            font-size: 2.5vh;
+            line-height: 2.8vh;
+          "
+        >
+          Best
+          <b>{{Math.floor(record.best/(record.total==0?1:record.total)*100)}}</b
+          >% &nbsp;&nbsp;&nbsp;Elo
+          <b
+            >{{elo}}</b
+          > &nbsp;&nbsp;&nbsp;Moves
+          <b>{{record.total | number:'1.0':'en-US'}}</b>
+          <br />
+          Wins <b>{{record.wins}}</b> &nbsp;&nbsp;&nbsp;Losses
+          <b>{{record.losses}}</b> &nbsp;&nbsp;&nbsp;Rank
+          <b>{{percent}}</b>%
+
+        </div>
+
+
+
+
+
+
+      </div>
+</i>
+</div>

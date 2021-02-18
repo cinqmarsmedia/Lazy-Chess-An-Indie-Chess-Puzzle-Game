@@ -1,0 +1,89 @@
+{
+  "name": "lazychess",
+  "version": "0.0.1",
+  "author": "Cinq-Mars Media",
+  "homepage": "https://cinqmarsmedia.com/",
+  "private": true,
+  "scripts": {
+    "start": "ionic-app-scripts serve",
+    "clean": "ionic-app-scripts clean",
+    "build": "ionic-app-scripts build",
+    "lint": "ionic-app-scripts lint",
+    "postinstall": "npx patch-package",
+    "build-ios-release": "ionic cordova build ios --aot --minifyjs --minifycss --rollup --release"
+  },
+  "dependencies": {
+    "@angular/animations": "5.2.11",
+    "@angular/common": "5.2.11",
+    "@angular/compiler": "5.2.11",
+    "@angular/compiler-cli": "5.2.11",
+    "@angular/core": "5.2.11",
+    "@angular/forms": "5.2.11",
+    "@angular/platform-browser": "5.2.11",
+    "@angular/platform-browser-dynamic": "5.2.11",
+    "@ionic-native/core": "4.20.0",
+    "@ionic-native/device-feedback": "^4.20.0",
+    "@ionic-native/launch-review": "^4.20.0",
+    "@ionic-native/splash-screen": "4.20.0",
+    "@ionic-native/status-bar": "4.20.0",
+    "@ionic-native/taptic-engine": "^4.20.0",
+    "@ionic/storage": "2.2.0",
+    "angularfire2": "^5.0.0-rc.11",
+    "core-js": "^3.6.5",
+    "deep-email-validator": "^0.1.18",
+    "firebase": "^5.2.0",
+    "ionic-angular": "3.9.9",
+    "ionicons": "3.0.0",
+    "ng2-chessboard": "^1.0.3",
+    "rxjs": "6.0.0",
+    "rxjs-compat": "6.2.2",
+    "sw-toolbox": "3.6.0",
+    "zone.js": "0.8.29"
+  },
+  "devDependencies": {
+    "@ionic/app-scripts": "3.2.3",
+    "cordova-admob-plus": "^0.42.0",
+    "cordova-android": "^9.0.0",
+    "cordova-ios": "^6.1.1",
+    "cordova-launch-review": "^4.0.1",
+    "cordova-plugin-androidx-adapter": "^1.1.3",
+    "cordova-plugin-consent": "^0.19.0",
+    "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-inappbrowser": "^4.1.0",
+    "cordova-plugin-ionic-keyboard": "^2.2.0",
+    "cordova-plugin-ionic-webview": "^4.2.1",
+    "cordova-plugin-purchase": "^10.5.0",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-statusbar": "^2.4.2",
+    "cordova-plugin-taptic-engine": "^2.2.0",
+    "cordova-plugin-velda-devicefeedback": "0.0.2",
+    "cordova-plugin-whitelist": "^1.3.3",
+    "typescript": "2.7.2"
+  },
+  "description": "Lazy Chess",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-velda-devicefeedback": {},
+      "cordova-plugin-taptic-engine": {},
+      "cordova-launch-review": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-consent": {},
+      "cordova-plugin-purchase": {},
+      "cordova-plugin-inappbrowser": {},
+      "cordova-admob-plus": {
+        "APP_ID_ANDROID": "<admobID_android>",
+        "APP_ID_IOS": "<admobID_ios>"
+      },
+      "cordova-plugin-androidx-adapter": {}
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  }
+}

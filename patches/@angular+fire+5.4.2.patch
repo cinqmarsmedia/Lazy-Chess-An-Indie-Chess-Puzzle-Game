@@ -1,0 +1,25 @@
+diff --git a/node_modules/@angular/fire/firebase.app.module.d.ts b/node_modules/@angular/fire/firebase.app.module.d.ts
+index e47694b..550caf2 100644
+--- a/node_modules/@angular/fire/firebase.app.module.d.ts
++++ b/node_modules/@angular/fire/firebase.app.module.d.ts
+@@ -43,5 +43,6 @@ export declare class AngularFireModule {
+             useValue: string | FirebaseAppConfig | undefined;
+         }[];
+     };
+-    constructor(platformId: Object);
++    constructor(platformId: Object){
++    };
+ }
+diff --git a/node_modules/@angular/fire/firebase.app.module.js b/node_modules/@angular/fire/firebase.app.module.js
+index 0d1f31a..21b95c4 100644
+--- a/node_modules/@angular/fire/firebase.app.module.js
++++ b/node_modules/@angular/fire/firebase.app.module.js
+@@ -48,6 +48,8 @@ var AngularFireModule = (function () {
+     }
+     AngularFireModule_1 = AngularFireModule;
+     AngularFireModule.initializeApp = function (options, nameOrConfig) {
++        console.log("FORCING WEBSOCKETS INSTEAD OF LONGPOLLING")
++        firebase.database["INTERNAL"].forceWebSockets()
+         return {
+             ngModule: AngularFireModule_1,
+             providers: [

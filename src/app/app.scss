@@ -1,0 +1,306 @@
+// http://ionicframework.com/docs/theming/
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+iframe {padding:20px !important}
+.grow { -webkit-transition: .2s}
+.grow:hover { -webkit-transform: scale(1.02);cursor: pointer; cursor: hand;}
+
+.halfopacitynothin{
+  opacity:.5;
+  pointer-events:none;
+}
+
+.challengePrompt > .alert-wrapper{
+  max-height:100vh !important;
+}
+
+.challengePrompt > .alert-wrapper > .alert-head{
+  padding:0px !important;
+}
+.challengePrompt > .alert-wrapper > .alert-message{
+  padding:0px !important;
+}
+
+.stats > .alert-wrapper > .alert-message{
+  max-height:100vh !important;
+}
+
+.alert-radio-group{
+  max-height:340px !important;
+}
+.challengeImg{
+float:right;
+width:50%;
+margin-left:2%;
+}
+
+.challengeInfo > .alert-wrapper{
+max-width:350px !important;
+max-height:80vh !important;
+}
+
+ .red{
+  font-weight:bold;
+  color:red;
+ }
+
+.challengeInfo > .alert-wrapper > .alert-message{
+max-height:80vh !important;
+text-align:left;
+}
+
+
+.challengeButtonNew{
+  color:#eb445a !important;
+  font-weight:bold;
+}
+
+.list-ios > .item-block:last-child{
+  border-bottom:none !important;
+}
+
+.list{
+  margin-bottom:1vh !important;
+}
+
+  .starPrompt{
+    font-weight:bold;
+  }
+
+
+ .red{
+  font-weight:bold;
+  color:red;
+ }
+
+ .alert-wrapper{
+  max-width:300px !important;
+ }
+
+.adIcon{
+  width:40%;
+  padding-right:5%;
+float:left;
+}
+
+
+ion-list-header{
+  font-style:italic;
+  opacity:.8;
+ }
+
+.label-md{
+    color:white !important;
+}
+
+
+@font-face {
+  font-family: "RobotoThin";
+  src: url("/assets/robotoThin.ttf");
+  font-weight:normal;
+}
+
+@font-face {
+  font-family: "RobotoThin";
+  src: url("/assets/robotoLight.ttf");
+  font-weight:bold
+}
+
+
+
+
+.list-header-md {
+  margin-bottom: -5px;
+}
+
+.list {
+  margin-bottom: 15px;
+}
+
+.content {
+  background: #333 !important;
+  color: white;
+}
+
+.item {
+  background: #333 !important;
+  color: white !important;
+}
+
+.font {
+  font-family: "RobotoThin", sans-serif;
+  font-weight: 100 !important;
+}
+
+ion-app {
+  //background:#333 !important;
+
+  background: url("/assets/3px-tile.png");
+  background-color: rgb(55, 55, 55) !important;
+
+  .nav-decor {
+    background: transparent !important;
+  }
+
+  @-webkit-keyframes shake {
+    from,
+    to {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+
+    10%,
+    50%,
+    90% {
+      -webkit-transform: translate3d(-2vw, 0, 0);
+      transform: translate3d(-2vw, 0, 0);
+    }
+
+    30%,
+    70% {
+      -webkit-transform: translate3d(2vw, 0, 0);
+      transform: translate3d(2vw, 0, 0);
+    }
+  }
+
+  @keyframes shake {
+    from,
+    to {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+
+    10%,
+    50%,
+    90% {
+      -webkit-transform: translate3d(-2vw, 0, 0);
+      transform: translate3d(-2vw, 0, 0);
+    }
+
+    30%,
+    70% {
+      -webkit-transform: translate3d(2vw, 0, 0);
+      transform: translate3d(2vw, 0, 0);
+    }
+  }
+
+  .shake {
+    -webkit-animation-name: shake;
+    animation-name: shake;
+  }
+
+  @-webkit-keyframes pulse {
+    from {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+    }
+
+    50% {
+      -webkit-transform: scale3d(1.05, 1.05, 1.05);
+      transform: scale3d(1.05, 1.05, 1.05);
+    }
+
+    to {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+    }
+  }
+
+  @keyframes pulse {
+    from {
+      opacity: 0;
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+    }
+
+    25% {
+      opacity: 0.4;
+      -webkit-transform: scale3d(1.1, 1.1, 1.1);
+      transform: scale3d(1.1, 1.1, 1.1);
+    }
+
+    50% {
+      -webkit-transform: scale3d(1.05, 1.05, 1.05);
+      transform: scale3d(1.05, 1.05, 1.05);
+    }
+
+    75% {
+      opacity: 0.4;
+      -webkit-transform: scale3d(1.1, 1.1, 1.1);
+      transform: scale3d(1.1, 1.1, 1.1);
+    }
+
+    to {
+      opacity: 0;
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+    }
+  }
+
+  .pulse {
+    -webkit-animation-name: pulse;
+    animation-name: pulse;
+  }
+
+  @-webkit-keyframes flash {
+    from,
+    50%,
+    to {
+      opacity: 1;
+    }
+
+    25%,
+    75% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes flash {
+    from,
+    50%,
+    to {
+      opacity: 1;
+    }
+
+    25%,
+    75% {
+      opacity: 0;
+    }
+  }
+
+  .flash {
+    -webkit-animation-name: flash;
+    animation-name: flash;
+  }
+
+  .animated {
+    -webkit-animation-duration: 1000ms !important;
+    animation-duration: 1000ms !important;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }
+
+  .animateSlow {
+    -webkit-animation-duration: 2000ms !important;
+    animation-duration: 2000ms !important;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }
+
+  .animated.infinite {
+    animation-iteration-count: infinite;
+  }
+}

@@ -1,0 +1,185 @@
+<!--<link href="https://fonts.googleapis.com/css?family=Roboto:100i&display=swap" rel="stylesheet">
+-->
+<ion-menu side="end" [content]="content" type="overlay">
+
+
+  <ion-content>
+    <ion-list>
+      <ion-list-header> Settings <ion-icon style="color:#ffd74a" name="md-star"></ion-icon>
+
+        <div (click)="eventPublish('guide',null)" style="float:right">Help <ion-icon name="md-help-circle"></ion-icon></div>
+
+      </ion-list-header>
+<!---->
+        <ion-item>
+          
+        <ion-label>Mode</ion-label>
+        <ion-select     
+          [(ngModel)]="mode"
+          (ngModelChange)="eventPublish('mode',$event)"
+        >
+
+          <ion-option value="nBest">N Best</ion-option>
+          <ion-option value="bestRand">Best+Random</ion-option>
+          <ion-option value="shallow">Shallow</ion-option>
+          <ion-option value="allRand">All Random</ion-option>
+          <ion-option value="twobytwo">2 x 2</ion-option>
+          <ion-option value="pieceFocus">By Piece</ion-option>
+          <ion-option value="bothSides">Both Sides</ion-option>
+        <ion-option value="swipe">Swipe</ion-option>
+        </ion-select>
+      </ion-item>
+
+
+      <ion-item [ngClass]="{'halfopacitynothin':mode=='swipe' || mode=='pieceFocus' || mode=='twobytwo'}">
+        <ion-label>Difficulty</ion-label>
+        <ion-select
+          (ngModelChange)="eventPublish('difficulty',$event)"
+          [(ngModel)]="difficulty"
+        >
+          <ion-option value="4">4 Moves</ion-option>
+          <ion-option value="3">3 Moves</ion-option>
+          <ion-option value="2">2 Moves</ion-option>
+        </ion-select>
+      </ion-item>
+<!--
+      <ion-item>
+        <ion-label>Think Time</ion-label>
+        <ion-select
+          (ngModelChange)="eventPublish('thinktime',$event)"
+          [(ngModel)]="thinkTime"
+        >
+          <ion-option value="200">500 ms</ion-option>
+          <ion-option value="700">1 sec</ion-option>
+          <ion-option value="1700">2 sec</ion-option>
+          <ion-option value="4700">5 sec</ion-option>
+      
+        </ion-select>
+      </ion-item>
+-->
+      <ion-item>
+        <ion-label>Pieces</ion-label>
+        <ion-select
+          *ngIf="visible"
+          (ngModelChange)="eventPublish('changeTheme',$event)"
+          [(ngModel)]="ptheme"
+        >
+          <ion-option value="alpha">Alpha</ion-option>
+          <ion-option value="kosal">Kosal</ion-option>
+          <ion-option value="merida">Merida</ion-option>
+          <ion-option value="oslo">Oslo</ion-option>
+          <ion-option value="california">California</ion-option>
+       
+        </ion-select>
+      </ion-item>
+
+  <ion-item>
+        <ion-label>Theme</ion-label>
+        <ion-select
+          *ngIf="visible"
+          (ngModelChange)="eventPublish('changeColor',$event)"
+          [(ngModel)]="color"
+        >
+          <ion-option value="default">Default</ion-option>
+          <ion-option value="frozen">Frozen</ion-option>
+          <ion-option value="lime">Lime</ion-option>
+          <ion-option value="leipzig">Leipzig</ion-option>
+          <ion-option value="chess24">Chess24</ion-option>
+        </ion-select>
+      </ion-item>
+
+
+
+    </ion-list>
+
+
+
+
+    <ion-list-header> Multiplayer <ion-icon style="color:#ffd74a" name="md-star"></ion-icon></ion-list-header>
+    <ion-list>
+      <button menuClose ion-item (click)="eventPublish('playFriend',null)">
+        Challenge Friend
+      </button>
+
+      <button menuClose ion-item (click)="eventPublish('randOpp',null)">
+        Play Random Opponent
+      </button>
+      <!---->
+      <button menuClose ion-item (click)="eventPublish('local',null)">
+        Pass & Play
+      </button>
+    </ion-list>
+<!--
+    <ion-list-header> Bonuses </ion-list-header>
+    <ion-list>
+      <button menuClose ion-item (click)="eventPublish('playFriend',null)">
+        Upgrade to Full
+      </button>
+
+      <button menuClose ion-item (click)="eventPublish('randOpp',null)">
+        Unlock Bonuses
+      </button>
+    </ion-list>
+-->
+
+    <ion-list-header> Other <ion-icon style="color:#ffd74a" name="md-star"></ion-icon></ion-list-header>
+
+    <ion-list>
+      <!--
+        <button (click)="eventPublish('stats')" menuClose ion-item>
+         Stats
+        </button>
+       
+        <button (click)="eventPublish('pauseAds')" menuClose ion-item>
+         Pause Ads
+        </button>
+      -->
+      <button (click)="eventPublish('challengePrompt')" menuClose ion-item>
+        <ion-badge *ngIf="newChallenges>0" color="danger" item-end>{{newChallenges}}</ion-badge>
+       Challenges
+      </button>
+
+      <button *ngIf="!upgraded" (press)="eventPublish('code')" (click)="eventPublish('upgrade')" menuClose ion-item>
+       Upgrade to <b>Ad Free</b>
+      </button>
+<button *ngIf="!upgraded && iOS" (click)="eventPublish('code')" menuClose ion-item>
+       Restore Donation
+      </button>
+   <button *ngIf="upgraded" (click)="eventPublish('upgrade')" menuClose ion-item>
+       Our <b>Non-Profit</b>
+      </button>
+
+      <button *ngIf="winHeight>710 || upgraded || !iOS" (click)="eventPublish('devil')" menuClose ion-item>
+        <i>The Devil's Calculator</i>
+      </button>
+      <button *ngIf="winHeight>785 || (winHeight>720 && (!iOS || upgraded))" (click)="eventPublish('anagraphs')" menuClose ion-item>
+       <i> Anagraphs</i>
+      </button>
+    </ion-list>
+    <div style="text-align: center">
+      <button
+        ion-button
+        large
+        full
+        color="light"
+        (press)="eventPublish('resetData',null)"
+        (click)="eventPublish('abandon',null)"
+      >
+        Forfeit Game
+        <span
+          style="
+            position: absolute;
+            bottom:7px;right:40px;
+            font-size: 9px;
+            margin-left: 60px;
+            margin-top: 15px;
+          "
+          ><i>hold to reset</i></span
+        >
+      </button>
+    </div>
+    <div (click)="eventPublish('openCMM')" style="text-align: center">Cinq-Mars Media © 2021 <b>v1.4</b></div>
+  </ion-content>
+</ion-menu>
+
+<ion-nav [root]="rootPage" #content></ion-nav>

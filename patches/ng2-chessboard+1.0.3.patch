@@ -1,0 +1,26 @@
+diff --git a/node_modules/ng2-chessboard/ng2-chessboard.es5.js b/node_modules/ng2-chessboard/ng2-chessboard.es5.js
+index 26c8ff5..d84ef23 100644
+--- a/node_modules/ng2-chessboard/ng2-chessboard.es5.js
++++ b/node_modules/ng2-chessboard/ng2-chessboard.es5.js
+@@ -140,7 +140,7 @@ var ChessboardComponent = (function () {
+          * @return {?}
+          */
+         set: function (value) {
+-            this._pieceTheme = value instanceof Function ? value() : value;
++            this._pieceTheme = value;
+             if (this.board)
+                 this.load();
+             this.pieceThemeChange.emit(this._pieceTheme);
+diff --git a/node_modules/ng2-chessboard/ng2-chessboard.js b/node_modules/ng2-chessboard/ng2-chessboard.js
+index 4f396b5..9a42dde 100644
+--- a/node_modules/ng2-chessboard/ng2-chessboard.js
++++ b/node_modules/ng2-chessboard/ng2-chessboard.js
+@@ -96,7 +96,7 @@ class ChessboardComponent {
+      * @return {?}
+      */
+     set pieceTheme(value) {
+-        this._pieceTheme = value instanceof Function ? value() : value;
++        this._pieceTheme = value;
+         if (this.board)
+             this.load();
+         this.pieceThemeChange.emit(this._pieceTheme);
