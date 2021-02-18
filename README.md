@@ -1,1 +1,1 @@
-# Lazy-Chess---An-Indie-Chess-Puzzle-Game
+# Lazy-Chess-An-Indie-Chess-Puzzle-Game
