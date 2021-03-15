@@ -1,22 +1,28 @@
 {
   "name": "lazychess",
   "version": "0.0.1",
-  "author": "Cinq-Mars Media",
+  "author": {
+    "name": "Christopher Cinq-Mars Jarvis",
+    "email": "info@cinqmarsmedia.com"
+  },
   "homepage": "https://cinqmarsmedia.com/",
   "private": true,
+  "main": "main.js",
   "scripts": {
-    "start": "ionic-app-scripts serve",
+    "start": "electron --inspect=5858 . --enable-logging --remote-debugging-port='8315'",
     "clean": "ionic-app-scripts clean",
-    "build": "ionic-app-scripts build",
+    "build": "ionic build --minifyjs --minifycss",
     "lint": "ionic-app-scripts lint",
     "postinstall": "npx patch-package",
-    "build-ios-release": "ionic cordova build ios --aot --minifyjs --minifycss --rollup --release"
+    "build-ios-release": "ionic cordova build ios --aot --minifyjs --minifycss --rollup --release",
+    "build-mac": "env CSC_LINK='./direct.p12' npx electron-builder",
+    "build-linux": "npx electron-builder -l",
+    "build-windows": "npx electron-builder -w"
   },
   "dependencies": {
     "@angular/animations": "5.2.11",
     "@angular/common": "5.2.11",
     "@angular/compiler": "5.2.11",
-    "@angular/compiler-cli": "5.2.11",
     "@angular/core": "5.2.11",
     "@angular/forms": "5.2.11",
     "@angular/platform-browser": "5.2.11",
@@ -31,7 +37,7 @@
     "angularfire2": "^5.0.0-rc.11",
     "core-js": "^3.6.5",
     "deep-email-validator": "^0.1.18",
-    "firebase": "^5.2.0",
+    "firebase": "^5.11.1",
     "ionic-angular": "3.9.9",
     "ionicons": "3.0.0",
     "ng2-chessboard": "^1.0.3",
@@ -41,6 +47,7 @@
     "zone.js": "0.8.29"
   },
   "devDependencies": {
+    "@angular/compiler-cli": "5.2.11",
     "@ionic/app-scripts": "3.2.3",
     "cordova-admob-plus": "^0.42.0",
     "cordova-android": "^9.0.0",
@@ -58,7 +65,50 @@
     "cordova-plugin-taptic-engine": "^2.2.0",
     "cordova-plugin-velda-devicefeedback": "0.0.2",
     "cordova-plugin-whitelist": "^1.3.3",
-    "typescript": "2.7.2"
+    "electron": "^11.2.3",
+    "electron-builder": "latest",
+    "electron-notarize": "^1.0.0",
+    "typescript": "3.5.1"
+  },
+  "build": {
+    "files": [
+      "!node_modules",
+      "www/**/*",
+      "main.js"
+    ],
+    "appId": "com.cinqmarsmedia.lazychess",
+    "productName": "Lazy Chess",
+    "copyright": "Copyright © 2021 Cinq-Mars Media",
+    "asar": true,
+    "portable": {
+      "useZip": true
+    },
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "build/icons/icon.ico"
+    },
+    "mac": {
+      "icon": "./build/icons/icon.icns",
+      "category": "public.app-category.games",
+      "hardenedRuntime": true,
+      "entitlements": "./build/entitlements.mac.inherit.plist",
+      "target": [
+        "dmg",
+        "zip",
+        "dir"
+      ]
+    },
+    "remoteBuild": true,
+    "linux": {
+      "target": [
+        "zip",
+        "AppImage",
+        "deb"
+      ],
+      "icon": "./build/icons"
+    }
   },
   "description": "Lazy Chess",
   "cordova": {
@@ -76,8 +126,8 @@
       "cordova-plugin-purchase": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-admob-plus": {
-        "APP_ID_ANDROID": "<admobID_android>",
-        "APP_ID_IOS": "<admobID_ios>"
+        "APP_ID_ANDROID": "<appID_Android>",
+        "APP_ID_IOS": "<appID_IOS"
       },
       "cordova-plugin-androidx-adapter": {}
     },

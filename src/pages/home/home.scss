@@ -157,7 +157,7 @@ background-color:rgba(250,210,72,.4);
 
 @media (min-width:730px) and (min-aspect-ratio: 2/3) {
 .title {font-size:5vh !important}
-.menuicon {font-size:6vh !important}
+.menuicon {font-size:7.5vh !important;top:4vh !important}
 }
 
 @media (min-width:730px) and (min-aspect-ratio: 3/2) {
@@ -313,16 +313,16 @@ border:4px solid #404040 !important;
   }
 
   .chessboard-63f37 {
-    background-image: url("/assets/retina-wood.png") !important;
+    background-image: url("../assets/retina-wood.png") !important;
   }
   .white-1e1d7 {
-    background: url("/assets/retina-woodSmall.png");
+    background: url("../assets/retina-woodSmall.png");
     background-color:var(--White) !important;
   }
 }
 
 .black-3c85d {
-  background: url("/assets/retina-woodSmall.png");
+  background: url("../assets/retina-woodSmall.png");
   background-color: var(--Black) !important;
 }
 

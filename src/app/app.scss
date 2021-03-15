@@ -109,13 +109,13 @@ ion-list-header{
 
 @font-face {
   font-family: "RobotoThin";
-  src: url("/assets/robotoThin.ttf");
+  src: url("../assets/robotoThin.ttf");
   font-weight:normal;
 }
 
 @font-face {
   font-family: "RobotoThin";
-  src: url("/assets/robotoLight.ttf");
+  src: url("../assets/robotoLight.ttf");
   font-weight:bold
 }
 
@@ -148,7 +148,7 @@ ion-list-header{
 ion-app {
   //background:#333 !important;
 
-  background: url("/assets/3px-tile.png");
+  background: url("../assets/3px-tile.png");
   background-color: rgb(55, 55, 55) !important;
 
   .nav-decor {

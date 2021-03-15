@@ -15,10 +15,10 @@
 
 <div style="font-size:2vh;position: absolute; right: 10vw; top: 8vh">
   <span style="border-bottom:1px solid white" class="grow showIT animated flash" *ngIf="wideview && currOpening.w" (click)="lookupOpening(currOpening.w)">
-<img style="vertical-align:bottom;width:3vh" [src]="'assets/pieces/alpha/bP.svg'"><b>{{currOpening.w.eco}}:{{currOpening.w.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
+<img style="vertical-align:bottom;width:3vh" [src]="'assets/pieces/alpha/bP.svg'"><b>{{currOpening.w.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
 </span>
 <span style="margin-left:5vw;border-bottom:1px solid white" class="grow showIT animated flash" *ngIf="wideview && currOpening.b" (click)="lookupOpening(currOpening.b)">
-  <img style="vertical-align:bottom;width:3vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.b.eco}}:{{currOpening.b.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
+  <img style="vertical-align:bottom;width:3vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.b.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
 </span>
 
 </div>
@@ -108,11 +108,11 @@
 <hr>
 -->
 <div style="font-size:3vh;padding:2vh;text-align:center">Cycle between your <b>{{numChoicesTxt}}</b> best moves by clicking on the board or using <span class="grow" (click)="keyboardShortcuts()" style="border-bottom:1px solid white">
-  <b>Keyboard Shorcuts</b> <ion-icon name="md-open"></ion-icon>
+  <b>Keyboard Shorcuts for you</b> <ion-icon name="md-open"></ion-icon>
 </span></div>
 
 
-<a class="twitter-timeline" data-dnt="true" data-theme="dark" href="https://twitter.com/LazyChessGame?ref_src=twsrc%5Etfw">Tweets by LazyChessGame</a>
+<a class="twitter-timeline"  (click)="$event.stopPropagation(); false" data-dnt="true" data-theme="dark" href="https://twitter.com/LazyChessGame?ref_src=twsrc%5Etfw"></a>
 
 
 
@@ -120,7 +120,7 @@
 
 </div>
 
-<div class="splitFont1" *ngFor="let move of moveHistory;let i=index" [ngClass]="{'highlighted':highlighted==i}">
+<div class="splitFont1" *ngFor="let move of moveHistory.slice().reverse();let i=index" [ngClass]="{'highlighted':highlighted==i}">
       <div (click)="showOldState(move,i)" class="grow" style="display:inline-block">
      <span class="splitFont2">&nbsp;&nbsp;<span *ngIf="moveHistory.length-i<10">&nbsp;</span>{{moveHistory.length-i}}.</span><img style="vertical-align:bottom;width:40px" [src]="'assets/pieces/alpha/'+move.color+move.piece+'.svg'">{{move.from}}<b>{{move.dest}}</b> <ion-icon *ngIf="move.best" style="color:#ffd74a" name="md-star"></ion-icon>
      <!--
@@ -151,7 +151,7 @@
 <img style="width:5vh;margin-left:.5vw;vertical-align:middle" src="assets/imgs/discord.svg">
 </span>
 
-  <span (click)="openLink('https://github.com/cinqmarsmedia/')" class="grow github" style="margin-left:2vw">
+  <span (click)="openLink('https://github.com/cinqmarsmedia/Lazy-Chess-An-Indie-Chess-Puzzle-Game')" class="grow github" style="margin-left:2vw">
   GitHub
 <img style="width:5vh;margin-left:.5vw;vertical-align:middle" src="assets/imgs/github.svg">
 </span>
@@ -248,6 +248,9 @@
           <span *ngIf="lastchoice.rank==-1"
               >a <b>great</b> opening</span>
 
+              <span *ngIf="lastchoice.rank==-2"
+              >a <b>good</b> opening</span>
+
             <span
               *ngIf="lastchoice.rank/numChoices<=.5 && lastchoice.rank!==0"
               style="font-style: normal !important"
@@ -297,10 +300,10 @@
           ">
 <span style="border-bottom:1px solid white" class="grow showIT animated flash" *ngIf="currOpening.b || currOpening.w" (click)="lookupOpening(currOpening.b)">
   <span *ngIf="currOpening.b" >
-  <img style="vertical-align:bottom;width:3.5vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.b.eco}}:{{currOpening.b.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
+  <img style="vertical-align:bottom;width:3.5vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.b.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
 </span>
 <span *ngIf="!currOpening.b && currOpening.w" >
- <img style="vertical-align:bottom;width:3.5vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.w.eco}}:{{currOpening.w.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
+ <img style="vertical-align:bottom;width:3.5vh" [src]="'assets/pieces/alpha/wP.svg'"><b>{{currOpening.w.name}}</b>&nbsp; <ion-icon name="md-open"></ion-icon>
 </span>
 </span>
 </div>
@@ -382,28 +385,32 @@
 
           <div *ngIf="lastchoice.move && flashResult && mode!=='allRand'" class="dynPad">
             <b>{{lastchoice.move}}</b> was
-            <span *ngIf="lastchoice.rank==1">your <b>best</b></span>
+            <span *ngIf="lastchoice.rank==1">your <b>best</b> move</span>
             
 
             <span
               *ngIf="lastchoice.rank==2"
-              >your <b>2nd</b> best</span
+              >your <b>2nd</b> best move</span
             >
 
             <span *ngIf="lastchoice.rank==3"
-              >your <b>3rd</b> best</span
+              >your <b>3rd</b> best move</span
             >
            
 
             <span *ngIf="lastchoice.rank>3"
-              >your <b>{{lastchoice.rank}}th</b> best</span
+              >your <b>{{lastchoice.rank}}th</b> best move</span
             >
 
             <span *ngIf="lastchoice.rank==0"
-              >a <b>random</b></span>
+              >a <b>random</b> move</span>
 
-          
- move
+          <span *ngIf="lastchoice.rank==-1"
+              >a <b>great</b> opening</span>
+
+              <span *ngIf="lastchoice.rank==-2"
+              >a <b>good</b> opening</span>
+              
             <span
               *ngIf="lastchoice.rank/numChoices<=.5 && lastchoice.rank!==0"
               style="font-style: normal !important"

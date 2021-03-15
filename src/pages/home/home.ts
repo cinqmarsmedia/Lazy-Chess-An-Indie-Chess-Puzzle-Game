@@ -20,37 +20,58 @@ import { MenuController } from "ionic-angular";
 
 import { base64Pieces } from "./../../constants";
 import { themes } from "./../../constants";
-import { emailDomainBlacklist} from "./../../constants";
+import { emailDomainBlacklist } from "./../../constants";
 import { openings } from "./../../constants";
-//import validate from 'deep-email-validator' 
+//import validate from 'deep-email-validator'
 
 declare const admob;
 
-const iapID = "<iap ID>";
+const iapID = "<iapID>";
 
 const admobIDInter = {
-  android: "<adMob Intersitial ID Android>",
-  ios: "<adMob Intersitial ID iOS>",
+  android: "<admobID_Android>",
+  ios: "<admobID_iOS>",
 };
 const admobIDReward = {
-  android: "<adMob ID Android>",
-  ios: "<adMob ID Android>",
+  android: "<admobID_Android>",
+  ios: "<admobID_iOS>",
 };
 
 const starThreshold = 30;
 const starMilestones = [90, 80, 70, 60, 50, 40, 30, 20, 10, 5, 3, 1.1];
 
-const modeDesc={
-"bestRand":["Best + Random Mode","In this mode one of your options will be your best move according to stockfish, and your other moves will be random. A great introductory mode, deceptively easy, where one blunder will likely cost you victory. The AI also improves in this mode."],
-"shallow":["Shallow Mode","Stockfish is reduced to its shallowest depth and things get frenzied. A good simulation of blitz sensibilities, your moves won't be as refined and neither will your opponents."],
-"allRand":["Random Mode","In this mode, stockfish is turned off and all your move choices are random. The game transforms into being about choosing the \"least worst\" move rather than the better of your two best. We are hard at work adding this feature, it will be available in a free update shortly. <b>Sign up for our newsletter to be notified and to earn a star!</b>"],
-"twobytwo":["2 x 2 Mode","A unique challenge where each player takes two moves in succession, one for themselves and another for their opponent. <b>Sign up for our newsletter to be notified and to earn a star!</b>"],
-"pieceFocus":["By Piece Mode","In this mode, you toggle between all the possible moves of a single piece stockfish chooses. We are hard at work adding this feature, it will be available in a free update shortly. <b>Sign up for our newsletter to be notified and to earn a star!</b>"],
-"bothSides":["Both Sides Mode","An extremely fun and challenging mode where you play as both white and black. As white you are trying to defeat black but blacks moves are much better. This mode does not work in online multiplayer"],
-"swipe":["Swipe Mode","Originally conceived as a standalone game, swipe mode lets you swipe in one of the eight cardinal or intermediate directions to move ALL chess pieces that can move in that direction on your turn. We are hard at work adding this feature, it will be available in a free update shortly. <b>Sign up for our newsletter to be notified and to earn a star!</b>"]
-}
+const modeDesc = {
+  bestRand: [
+    "Best + Random Mode",
+    "In this mode one of your options will be your best move according to stockfish, and your other moves will be random. A great introductory mode, deceptively easy, where one blunder will likely cost you victory. The AI also improves in this mode.",
+  ],
+  shallow: [
+    "Shallow Mode",
+    "Stockfish is reduced to its shallowest depth and things get frenzied. A good simulation of blitz sensibilities, your moves won't be as refined and neither will your opponents.",
+  ],
+  allRand: [
+    "Random Mode",
+    'In this mode, stockfish is turned off and all your move choices are random. The game transforms into being about choosing the "least worst" move rather than the better of your two best. We are hard at work adding this feature, it will be available in a free update shortly. <b>Sign up for our newsletter to be notified and to earn a star!</b>',
+  ],
+  twobytwo: [
+    "2 x 2 Mode",
+    "A unique challenge where each player takes two moves in succession, one for themselves and another for their opponent. <b>Sign up for our newsletter to be notified and to earn a star!</b>",
+  ],
+  pieceFocus: [
+    "By Piece Mode",
+    "In this mode, you toggle between all the possible moves of a single piece stockfish chooses. We are hard at work adding this feature, it will be available in a free update shortly. <b>Sign up for our newsletter to be notified and to earn a star!</b>",
+  ],
+  bothSides: [
+    "Both Sides Mode",
+    "An extremely fun and challenging mode where you play as both white and black. As white you are trying to defeat black but blacks moves are much better. This mode does not work in online multiplayer",
+  ],
+  swipe: [
+    "Swipe Mode",
+    "Originally conceived as a standalone game, swipe mode lets you swipe in one of the eight cardinal or intermediate directions to move ALL chess pieces that can move in that direction on your turn. We are hard at work adding this feature, it will be available in a free update shortly. <b>Sign up for our newsletter to be notified and to earn a star!</b>",
+  ],
+};
 
-const offlineProjects = [
+const offlineAds = [
   {
     title: "The Devil's Calculator",
     button: "Download Free",
@@ -135,7 +156,7 @@ const newGameFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 //const newGameFEN = "8/1P1P2pp/8/4Pp2/2P5/7k/P7/1K6 w - - 0 1";
 //const newGameFEN = "4q1k1/p4b2/2pN3p/2pn1pp1/P7/1P1P1N1P/2P2PP1/3Q2K1 w - - 0 1";
 
-const thresh:any = [
+const thresh: any = [
   null, // unlock challenge
   "friendPlay",
   "kosal",
@@ -165,12 +186,12 @@ const thresh:any = [
   null,
   "chess24",
   "allRand",
-  "pieceFocus"
+  "pieceFocus",
   //"0" RANDOM MODE
 ]; //{ alpha: 100, kosal: 75, merida: 50, oslo: 25 };
 
-const whiteOpenings=["e2e4","d2d4","c2c4","g1f3"];
-// const goodWhiteOpenings=[""] // one from each? then concat
+const bestWhiteOpenings = ["e2e4", "d2d4", "c2c4", "g1f3"];
+const goodWhiteOpenings = ["g2g3", "b2b3", "f2f4", "b1c3", "b2b4"]; // one from each? then concat
 
 @Component({
   selector: "page-home",
@@ -178,59 +199,82 @@ const whiteOpenings=["e2e4","d2d4","c2c4","g1f3"];
 })
 export class HomePage {
 
-handleKeyboardEvent(event: KeyboardEvent) {
-if (event.key=="Tab" || event.key=="a" || event.key=="w" || event.key.slice(0,5)=="Arrow"){
-this.prevToggle();
-}
+  ionViewDidEnter(){
+    window["twttr"] = (function (d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0],
+        t = window["twttr"] || {};
+      if (d.getElementById(id)) return t;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://platform.twitter.com/widgets.js";
+      fjs.parentNode.insertBefore(js, fjs);
 
-if (event.key=="Enter" || event.key=="Space"){
-this.makeMove();
-}
-if (event.key=="m" || event.key=="M"){
-if(this.menuCtrl.isOpen()){
-this.menuCtrl.close();
-}else{
-  this.menuCtrl.open();
-}
-}
+      t._e = [];
+      t.ready = function (f) {
+        t._e.push(f);
+      };
+      return t;
+    })(document, "script", "twitter-wjs");
+  }
 
-if (event.key=="1"){
-this.cp();
-}
-if (event.key=="2"){
-this.dpth()
-}
-if (event.key=="3"){
-this.hdnicp()
-}
-if (event.key=="4"){
-this.history();
-}
-if (event.key=="s" || event.key=="S"){
-this.showStats();
-}
-if (event.key=="Backspace" || event.key=="Delete"){
-this.abandonGame(true);
-}
-
-if (event.key=="T" || event.key=="t"){
-this.openLink('https://www.twitch.tv/cinqmarsmedia/')
-}
-if (event.key=="D" || event.key=="d"){
-this.openLink('https://discord.com/invite/fwkMQCnk2R')
-}
-
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (
+      event.key == "Tab" ||
+      event.key == "a" ||
+      event.key == "w" ||
+      event.key.slice(0, 5) == "Arrow"
+    ) {
+      this.prevToggle();
     }
+
+    if (event.key == "Enter" || event.key == "Space") {
+      this.makeMove();
+    }
+    if (event.key == "m" || event.key == "M") {
+      if (this.menuCtrl.isOpen()) {
+        this.menuCtrl.close();
+      } else {
+        this.menuCtrl.open();
+      }
+    }
+
+    if (event.key == "1") {
+      this.cp();
+    }
+    if (event.key == "2") {
+      this.dpth();
+    }
+    if (event.key == "3") {
+      this.hdnicp();
+    }
+    if (event.key == "4") {
+      this.history();
+    }
+    if (event.key == "s" || event.key == "S") {
+      this.showStats();
+    }
+    if (event.key == "Backspace" || event.key == "Delete") {
+      this.abandonGame(true);
+    }
+
+    if (event.key == "T" || event.key == "t") {
+      this.openLink("https://www.twitch.tv/cinqmarsmedia/");
+    }
+    if (event.key == "D" || event.key == "d") {
+      this.openLink("https://discord.com/invite/fwkMQCnk2R");
+    }
+  }
   //debugMode: any = true;
-  steam:any=true; // set to false for mobile!!!!!!!!!!!!!
-  currOpening:any={w:null,b:null}
-  mode:any="nBest"
+  steam: any = true; // set to false for mobile!!!!!!!!!!!!!
+  currOpening: any = { w: null, b: null };
+  mode: any = "nBest";
   wait: any = false;
-  moveHistory:any=[];
+  moveHistory: any = [];
   numChoices: any = 2;
   delayTime: any = 700;
   Math: any = Math;
-  wideview:any=false;
+  wideview: any = false;
   goodMoji: any = ["😄", "😊", "👍", "🤓", "👑"];
   badMoji: any = ["😬", "🧐", "🥺", "🤦‍♂️", "😧"];
   randNum: any = Math.floor(Math.random() * 50);
@@ -243,16 +287,16 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
   percent: any = 99;
   anagraphsiOS: any = "https://cinqmarsmedia.com/anagraphs";
   anagraphsAndroid: any = "https://cinqmarsmedia.com/anagraphs";
-  centipawns:any=0;
-  colorBlackAI:any=false;
+  centipawns: any = 0;
+  colorBlackAI: any = false;
   currDepth: any = 0;
-  handicap:any=0;
-  highlighted:any=0;
+  handicap: any = 0;
+  highlighted: any = 0;
   //percentile:any=0;
   numChoicesTxt: any = numConvert[this.numChoices];
   thinking: boolean = false;
   thinkingTimer: boolean = false; //is true when the app is thinking, but turns false when the thinking time is over. Is a fallback if the chess engine takes too long to compute.
-  thinkingTimeout:any; //the actual timeout
+  thinkingTimeout: any; //the actual timeout
   placeholder: any;
 
   //userTurn: any = true;
@@ -263,7 +307,7 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
   _queueSub;
   _challSub;
   onPauseSubscription: any;
-  newsletterSigned:any=false;
+  newsletterSigned: any = false;
   //onResumeSubscription: any;
   username: any = "";
   whiteBottom: any = true;
@@ -283,6 +327,7 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
   alertWindow: any;
   playerOne: any = true;
   countdownTimer: any;
+  lastRewardFail:any=null;
   timerVal: any = 0;
   helpTimer: any;
   stockfishWhite: any = false;
@@ -298,20 +343,28 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
     totalChoices: 0,
     wins: 0,
     losses: 0,
-    handicap:0,
-    modeTotals:{bestRand:0,shallow:0,allRand:0,pieceFocus:0,swipe:0}
+    handicap: 0,
+    modeTotals: {
+      bestRand: 0,
+      shallow: 0,
+      allRand: 0,
+      pieceFocus: 0,
+      swipe: 0,
+    },
   };
-  newboardgamestate:any=true;
-  elo:any;
+  newboardgamestate: any = true;
+  elo: any;
   difficultyBias: any = 0;
   repair: any = false;
   mobile: any;
-  iOS: any = navigator.userAgent.match(/Mac|iPhone|iPad|iPod/i);
+  iOS: any =
+    navigator.userAgent.match(/Mac|iPhone|iPad|iPod/i) &&
+    !navigator.userAgent.match(/Electron/i);
   bestPercent: any = 99;
   boardVisable: any = true;
   storedFEN: any = null;
-  stars: any=0;
-  alertBox:any;
+  stars: any = 0;
+  alertBox: any;
   color: any = "default";
   usePersonalisedAds: boolean = false;
   shownConsent: any = false;
@@ -329,7 +382,7 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
   constructor(
     //private admobpro: AdMobPro,
     private alertCtrl: AlertController,
-    public db: AngularFireDatabase,
+    //public db: AngularFireDatabase, // COMMENT IN FOR FIREBASE
     public events: Events,
     public menuCtrl: MenuController,
     public storage: Storage,
@@ -339,13 +392,13 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
     public launchReview: LaunchReview,
     public loadingCtrl: LoadingController
   ) {
-
     platform.ready().then(() => {
+      //alert(navigator.userAgent);
       this.setAnagraphsURL();
       if (window["cordova"] && window["cordova"].InAppBrowser) {
         window["open2"] = window["cordova"].InAppBrowser.open;
-      }else{
-        window["open2"]=window.open;
+      } else {
+        window["open2"] = window.open;
       }
       // this.startTimeout();
       if (this.platform.is("cordova")) {
@@ -364,7 +417,11 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
           this.setData();
           p.finish();
         });
-
+        /*
+  setTimeout(()=>{
+  window["store"].refresh()
+  },6000)
+*/
         window["store"].when(iapID).owned(() => {
           let p = window["store"].get(iapID);
           console.log(p.owned);
@@ -386,7 +443,16 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
 
     document.addEventListener("admob.reward_video.load_fail", () => {
       this.loadingPop.dismiss();
-      this.videoFailed();
+var time=new Date().getTime();
+      if (this.lastRewardFail && time-this.lastRewardFail>900000){
+        this.fallbackReward();
+this.lastRewardFail=time;
+      }else{
+    this.videoFailed();
+      }
+
+if (!this.lastRewardFail){this.lastRewardFail=time}
+      
       // show something
     });
 
@@ -396,21 +462,20 @@ this.openLink('https://discord.com/invite/fwkMQCnk2R')
       this.mobile = true;
     } else {
       this.mobile = false;
-      this.stars=starThreshold;
+      this.stars = starThreshold;
     }
 
-    
     /*
     this.onResumeSubscription = this.platform.resume.subscribe((result) => {
       this.syncChallenges();
     });
 */
-if (!this.mobile){
-this.dimensions();
+    if (!this.mobile) {
+      this.dimensions();
       window.onresize = () => {
         this.dimensions();
+      };
     }
-}
 
     this.onPauseSubscription = this.platform.pause.subscribe((result) => {
       this.setAnagraphsURL();
@@ -442,39 +507,32 @@ this.dimensions();
       }
     });
 
+    events.subscribe("mode", (val) => {
+      var available = thresh.includes(val) || val == "nBest";
 
-events.subscribe("mode", (val) => {
+      if (available) {
+        if (thresh.indexOf(val) > this.stars && val !== "nBest") {
+          this.starPrompt(val);
+          setTimeout(() => {
+            this.events.publish("updateMode", this.mode);
+          }, 0);
+        } else {
+          if (this.record.modeTotals[val] == 0 && val !== "nBest") {
+            this.pop(modeDesc[val][0], modeDesc[val][1]);
+          }
 
-  var available=thresh.includes(val) || val=='nBest'
+          this.mode = val;
+          this.setData();
+        }
+      } else {
+        this.popNews(modeDesc[val][0], modeDesc[val][1]);
+        setTimeout(() => {
+          this.events.publish("updateMode", this.mode);
+        }, 0);
+      }
 
-
-
-if (available){
-
-if (thresh.indexOf(val) > this.stars && val!=='nBest') {
-        this.starPrompt(val);
-        setTimeout(()=>{this.events.publish("updateMode", this.mode);},0)
-}else{
-
-if (this.record.modeTotals[val]==0 && val!=='nBest'){
-this.pop(modeDesc[val][0],modeDesc[val][1]);
-}
-
-this.mode=val;
-this.setData();
-}
-
-
-}else{
-this.popNews(modeDesc[val][0],modeDesc[val][1])
-setTimeout(()=>{this.events.publish("updateMode", this.mode);},0)
-}
-
-
-
-
-this.menuCtrl.close();
-})
+      this.menuCtrl.close();
+    });
     events.subscribe("changeTheme", (val) => {
       // go by num stars
       if (thresh.indexOf(val) <= this.stars) {
@@ -498,7 +556,8 @@ this.menuCtrl.close();
       var alert = this.alertCtrl.create({
         title: "Reset ALL Data?",
         enableBackdropDismiss: true,
-        subTitle: "The game will be fully reset including stars earned from watching ads or hitting milestones. Stars from donations will be preserved. <b>This cannot be undone.</b>",
+        subTitle:
+          "The game will be fully reset including stars earned from watching ads or hitting milestones. Stars from donations will be preserved. <b>This cannot be undone.</b>",
         //message: "Are you sure you want to quit?",
         buttons: [
           {
@@ -508,8 +567,8 @@ this.menuCtrl.close();
             text: "Yes",
             handler: (data) => {
               var temp = this.stars;
-              if (temp<starThreshold){
-                temp=0;
+              if (temp < starThreshold) {
+                temp = 0;
               }
               this.storage.clear().then(() => {
                 this.storage.set("lazyChessData", { stars: temp }).then(() => {
@@ -544,7 +603,6 @@ this.menuCtrl.close();
     });
 
     events.subscribe("code", (val) => {
-
       if (this.iOS && this.mobile) {
         //this.starPrompt("upgrade");
         this.restorePurchase();
@@ -554,22 +612,23 @@ this.menuCtrl.close();
     });
     events.subscribe("devil", (val) => {
       if (this.iOS) {
-        this.openLink("https://itunes.apple.com/app/id1447599858")
-    
+        this.openLink("https://itunes.apple.com/app/id1447599858");
       } else if (navigator.userAgent.match(/Android/i)) {
-     this.openLink("https://play.google.com/store/apps/details?id=com.cinqmarsmedia.devilscalc");
-      }else{
-this.openLink("https://www.cinqmarsmedia.com/devilscalculator/")
+        this.openLink(
+          "https://play.google.com/store/apps/details?id=com.cinqmarsmedia.devilscalc"
+        );
+      } else {
+        this.openLink("https://www.cinqmarsmedia.com/devilscalculator/");
       }
     });
 
     events.subscribe("anagraphs", (val) => {
       if (this.iOS) {
-        this.openLink(this.anagraphsiOS)
-      } else if (navigator.userAgent.match(/Android/i)){
+        this.openLink(this.anagraphsiOS);
+      } else if (navigator.userAgent.match(/Android/i)) {
         this.openLink(this.anagraphsAndroid);
-      }else{
-      this.openLink("https://cinqmarsmedia.com/anagraphs");
+      } else {
+        this.openLink("https://cinqmarsmedia.com/anagraphs");
       }
     });
 
@@ -597,7 +656,7 @@ this.openLink("https://www.cinqmarsmedia.com/devilscalculator/")
           this.events.publish("updateDifficulty", this.numChoices);
         }, 0);
 
-       // console.log(this.numChoices);
+        // console.log(this.numChoices);
         this.starPrompt(val);
       } else {
         if (this.numChoices !== val) {
@@ -615,20 +674,16 @@ this.openLink("https://www.cinqmarsmedia.com/devilscalculator/")
 
     events.subscribe("guide", (val) => {
       this.guide();
-    })
+    });
 
     events.subscribe("playFriend", (val) => {
-
-  if (thresh.indexOf("friendPlay") > this.stars) {
-        this.starPrompt("friendPlay");
-      } else {
-   if (!window.navigator.onLine) {
-        this.noInternet();
-        return;
-      }
-      this.abandonGame(this.gameType !== "ai", "firebase");
-      this.playOnline(false);
-      }
+        if (!window.navigator.onLine) {
+          this.noInternet();
+          return;
+        }
+        this.abandonGame(this.gameType !== "ai", "firebase");
+        this.playOnline(false);
+      
 
       this.menuCtrl.close();
     });
@@ -666,18 +721,25 @@ this.openLink("https://www.cinqmarsmedia.com/devilscalculator/")
 
   }
 
-dimensions() {
-var ratio = window.innerWidth / window.innerHeight;
-this.wideview=ratio>8/7 && window.innerWidth>730;
+  dimensions() {
+    var ratio = window.innerWidth / window.innerHeight;
+    this.wideview = ratio > 8 / 7 && window.innerWidth > 730;
   }
 
-guide(){
-if (!window.navigator.onLine){
-this.noInternet();
-  return;
-}
-this.openLink("https://www.cinqmarsmedia.com/lazychess/guide/")
-}
+  guide() {
+    if (!window.navigator.onLine) {
+      this.noInternet();
+      return;
+    }
+    this.openLink("https://www.cinqmarsmedia.com/lazychess/guide/");
+  }
+
+  fallbackReward(){
+this.showInterAd();
+this.showOfflineAd();
+this.earnedUpgrade(false);
+  }
+
   codeInput() {
     /**/
     if (this.iOS && this.mobile) {
@@ -792,7 +854,8 @@ this.openLink("https://www.cinqmarsmedia.com/lazychess/guide/")
     var alert = this.alertCtrl.create({
       title: "Full Game Unlocked",
       //subTitle: 'wowowow',
-      message: "Thank you for your donation! As a non-profit, we rely on your support and are incredibly grateful for it. Please keep in touch with our organization and get updates on all our new projects by signing up for our newsletter below.",
+      message:
+        "Thank you for your donation! As a non-profit, we rely on your support and are incredibly grateful for it. Please keep in touch with our organization and get updates on all our new projects by signing up for our newsletter below.",
 
       buttons: [
         {
@@ -803,8 +866,8 @@ this.openLink("https://www.cinqmarsmedia.com/lazychess/guide/")
           text: "Ok!",
           handler: () => {
             this.newsletterPop();
-          }
-    }
+          },
+        },
       ],
     });
     alert.present();
@@ -821,10 +884,11 @@ this.openLink("https://www.cinqmarsmedia.com/lazychess/guide/")
     }
   }
 
-  keyboardShortcuts(){
-   var alert = this.alertCtrl.create({
+  keyboardShortcuts() {
+    var alert = this.alertCtrl.create({
       title: "Keyboard Shortcuts",
-      message: "commit move: <b>space or enter</b><br>toggle moves: <b>tab or arrow keys</b><br>forfeit: <b>delete or backspace</b><br><br>Menu: <b>m</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Stats: <b>s</b><br>Advantage: <b>1</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Depth: <b>2</b><br>AI Bias: <b>3</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; History: <b>4</b><br>Twitch: <b>t</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Discord: <b>d</b>",
+      message:
+        "commit move: <b>space or enter</b><br>toggle moves: <b>tab or arrow keys</b><br>forfeit: <b>delete or backspace</b><br><br>Menu: <b>m</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Stats: <b>s</b><br>Advantage: <b>1</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Depth: <b>2</b><br>AI Bias: <b>3</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; History: <b>4</b><br>Twitch: <b>t</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Discord: <b>d</b>",
       buttons: [
         {
           text: "Ok",
@@ -836,41 +900,7 @@ this.openLink("https://www.cinqmarsmedia.com/lazychess/guide/")
   }
 
   getCodes(quick) {
-    var now: any = new Date();
-    //var tomorrow:any = new Date();
-    //tomorrow.setDate(now.getDate()+1);
-
-    var expiry;
-    var cnst;
-    var mult;
-
-    if (quick) {
-      expiry = 1800000;
-      mult = 14;
-      cnst = 52;
-    } else {
-      expiry = 79200000;
-      mult = 9;
-      cnst = 32;
-    }
-
-    var expiryvalue = Math.floor(now.getTime() / expiry);
-
-    var epochDay = parseInt(String(expiryvalue).substr(2));
-    var epochOne = parseInt(String(expiryvalue + 1).substr(2));
-    // 3 days
-    var raw = Math.pow(epochDay * mult + cnst, 3)
-      .toString(36)
-      .toUpperCase();
-
-    var rawone = Math.pow(epochOne * mult + cnst, 3)
-      .toString(36)
-      .toUpperCase();
-    /*
-raw=raw.substr(raw.length - 8);
-rawtom=rawtom.substr(rawtom.length - 8);
-*/
-    return [raw, rawone];
+    return ["12345", "6789"];
   }
 
   syncChallenges() {
@@ -878,6 +908,7 @@ rawtom=rawtom.substr(rawtom.length - 8);
     if (new Date().getTime() - this.challengeUpdated < 36400000) {
       return;
     }
+    /* // COMMENT IN FOR FIREBASE
     this._challSub = this.db
       .list("/challenges")
       .valueChanges()
@@ -889,6 +920,7 @@ rawtom=rawtom.substr(rawtom.length - 8);
         this.setData();
         this._challSub.unsubscribe();
       });
+      */
   }
 
   updateChallCount(canonlybebigger: any = true) {
@@ -925,7 +957,6 @@ rawtom=rawtom.substr(rawtom.length - 8);
     } else {
       return false;
     }
-
   }
 
   arrayN(int) {
@@ -933,7 +964,6 @@ rawtom=rawtom.substr(rawtom.length - 8);
   }
 
   fixCorruption() {
-    console.error("DISASTER, WHY is this happening????????");
     /*
      let store={username:this.username,supressAds:this.supressAds,adPromptCounter:this.adPromptCounter,record:this.record,adPromptThreshold:this.adPromptThreshold,theme:this.theme,bestPercent:this.bestPercent,storedFEN:this.game.fen()}
 
@@ -986,7 +1016,11 @@ rawtom=rawtom.substr(rawtom.length - 8);
 
   starPrompt(val: any = "") {
     if (this.stars >= starThreshold) {
-      this.thankyou();
+      if (this.mobile) {
+        this.thankyou();
+      } else {
+        this.openLink("https://cinqmarsmedia.com");
+      }
       return;
     }
 
@@ -1116,7 +1150,7 @@ rawtom=rawtom.substr(rawtom.length - 8);
 
   ionViewCanEnter(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.storage.get("<localStorageVariable>").then((val) => {
+      this.storage.get("lazyChessData").then((val) => {
         //console.log(val);
         if (val) {
           if (val.username) {
@@ -1134,59 +1168,73 @@ rawtom=rawtom.substr(rawtom.length - 8);
             if (this.stars < val.stars) {
               this.stars = val.stars;
             }
-          
+
             this.percent = this.percentile();
-            this.elo=this.calcELO();
+            this.elo = this.calcELO();
             this.color = val.color;
             this.updateChallCount();
 
-// updated variables in new versions
-  if (val.handicap){
-    this.handicap=val.handicap
-  }
+            // updated variables in new versions
+            if (val.handicap) {
+              this.handicap = val.handicap;
+            }
 
-if (!val.newsletterSigned){this.newsletterSigned=false}else{
-  this.newsletterSigned=val.newsletterSigned;
-}
-if (!val.mode){this.mode="nBest"}else{
-  this.mode=val.mode
-this.events.publish("updateMode", this.mode);
-}
+            if (!val.newsletterSigned) {
+              this.newsletterSigned = false;
+            } else {
+              this.newsletterSigned = val.newsletterSigned;
+            }
+            if (!val.mode) {
+              this.mode = "nBest";
+            } else {
+              this.mode = val.mode;
+              this.events.publish("updateMode", this.mode);
+            }
 
-if (!val.numChoices){
-  this.numChoices=2;
-}else{
-  this.numChoices=val.numChoices;
-this.events.publish("updateDifficulty", this.numChoices);
-}
+            if (!val.lastRewardFail){
+              this.lastRewardFail=null;
+            }else{
+              this.lastRewardFail=val.lastRewardFail;
+            }
 
-if (!val.moveHistory){
-  this.moveHistory=[];
-}else{
-  this.moveHistory=val.moveHistory;
-}
+            if (!val.numChoices) {
+              this.numChoices = 2;
+            } else {
+              this.numChoices = val.numChoices;
+              this.events.publish("updateDifficulty", this.numChoices);
+            }
 
+            if (!val.moveHistory) {
+              this.moveHistory = [];
+            } else {
+              this.moveHistory = val.moveHistory;
+            }
 
-if (!val.record.handicap){this.record.handicap=0}else{this.record.handicap=val.record.handicap}
-if (!val.record.modeTotals){
-  this.record.modeTotals={bestRand:0,allRand:0,pieceFocus:0,swipe:0}
-}else{
+            if (!val.record.handicap) {
+              this.record.handicap = 0;
+            } else {
+              this.record.handicap = val.record.handicap;
+            }
+            if (!val.record.modeTotals) {
+              this.record.modeTotals = {
+                bestRand: 0,
+                allRand: 0,
+                pieceFocus: 0,
+                swipe: 0,
+              };
+            } else {
+              this.record.modeTotals = val.record.modeTotals;
+              if (!val.record.modeTotals.shallow) {
+                this.record.modeTotals.shallow = 0;
+              }
+              if (!val.record.modeTotals.twobytwo) {
+                this.record.modeTotals.twobytwo = 0;
+              }
 
-this.record.modeTotals=val.record.modeTotals;
-  if (!val.record.modeTotals.shallow){
-this.record.modeTotals.shallow=0;
-  }
-  if (!val.record.modeTotals.twobytwo){
-this.record.modeTotals.twobytwo=0;
-  }
-
-  if (!val.record.modeTotals.bothSides){
-this.record.modeTotals.bothSides=0;
-  }
-  
-}
-
-
+              if (!val.record.modeTotals.bothSides) {
+                this.record.modeTotals.bothSides = 0;
+              }
+            }
           } else if (val.stars) {
             if (this.stars < val.stars) {
               this.stars = val.stars;
@@ -1245,7 +1293,6 @@ this.admobpro.hideBanner();
     this.newGame();
   }
 
-
   /*  */
 
   apticCall(type: any = 3) {
@@ -1290,12 +1337,13 @@ this.admobpro.hideBanner();
       attemptedChallenges: this.attemptedChallenges,
       challengeDB: this.challengeDB,
       challengeUpdated: this.challengeUpdated,
-      mode:this.mode,
-      newsletterSigned:this.newsletterSigned,
-      storedFEN:this.storedFEN,
-      moveHistory:this.moveHistory
+      mode: this.mode,
+      newsletterSigned: this.newsletterSigned,
+      storedFEN: this.storedFEN,
+      moveHistory: this.moveHistory,
+      lastRewardFail:this.lastRewardFail
     };
-    this.storage.set("<localStorageVar>", store);
+    this.storage.set("lazyChessData", store);
   }
 
   wrapVariables() {
@@ -1330,7 +1378,7 @@ this.admobpro.hideBanner();
     gameType: any = "ai",
     setMoves: any = false,
     gameobj: any = { fen: newGameFEN },
-    colorBlack:any=false
+    colorBlack: any = false
   ) {
     // how to do this?
 
@@ -1360,12 +1408,17 @@ this.admobpro.hideBanner();
                 this.gameConcluded(false);
               } else {
                 this.updateRank(false);
-                if (this.gameType == "ai"){
-this.abandonGame(false,"ai",false,{ fen: newGameFEN },colorBlack)
-                }else{
+                if (this.gameType == "ai") {
+                  this.abandonGame(
+                    false,
+                    "ai",
+                    false,
+                    gameobj,
+                    colorBlack
+                  );
+                } else {
                   this.abandonGame(false, gameType);
                 }
-                
               }
             },
           },
@@ -1384,8 +1437,8 @@ this.abandonGame(false,"ai",false,{ fen: newGameFEN },colorBlack)
       this.whiteBottom = !colorBlack;
       this.playersTurn = true;
       this.stockfishWhite = colorBlack;
-      this.colorBlackAI=colorBlack;
-      this.storedFEN=null;
+      this.colorBlackAI = colorBlack;
+      this.storedFEN = null;
 
       if (this.gameType !== "ai" && this.gameType !== "local") {
         if (this._fbSubGame) {
@@ -1418,8 +1471,8 @@ this.abandonGame(false,"ai",false,{ fen: newGameFEN },colorBlack)
       this.thinking = true;
       this.initStockfish();
 
-      if (gameobj.color){
-        this.colorBlackAI=(gameobj.color=='black');
+      if (gameobj.color) {
+        this.colorBlackAI = gameobj.color == "black";
       }
 
       this.newGame(gameobj.fen);
@@ -1491,6 +1544,7 @@ this.abandonGame(false,"ai",false,{ fen: newGameFEN },colorBlack)
     adAlert.present();
   }
 
+  
   updateRank(won) {
     this.showInterAd();
 
@@ -1504,7 +1558,7 @@ this.abandonGame(false,"ai",false,{ fen: newGameFEN },colorBlack)
     }
 
     this.percent = this.percentile();
-this.elo=this.calcELO();
+    this.elo = this.calcELO();
     if (this.percent < this.bestPercent) {
       for (let i = 0; i < starMilestones.length; i++) {
         if (
@@ -1518,7 +1572,28 @@ this.elo=this.calcELO();
       }
 
       this.syncChallenges();
-     
+      /*
+      if (percentRank < 50 && this.bestPercent >= 50) {
+        //if (this.stars == 0) {
+          this.earnedUpgrade(true);
+        //}
+      } else if (percentRank < 30 && this.bestPercent > 30) {
+        //-----------------------
+        this.earnedUpgrade(true);
+      } else if (percentRank < 20 && this.bestPercent > 20) {
+        this.earnedUpgrade(true);
+      } else if (percentRank < 10 && this.bestPercent > 10) {
+        this.earnedUpgrade(true);
+      } else if (percentRank < 5 && this.bestPercent > 5) {
+        this.earnedUpgrade(true);
+      } else if (percentRank < 2 && this.bestPercent > 2) {
+        this.earnedUpgrade(true);
+      } else if (percentRank < 1.1 && this.bestPercent > 1.1) {
+        this.earnedUpgrade(true);
+      }
+
+      this.bestPercent = percentRank;
+*/
     }
   }
 
@@ -1562,7 +1637,6 @@ this.elo=this.calcELO();
     var themes: any = ["kosal", "merida", "oslo", "california"];
     var colors: any = ["frozen", "lime", "leipzig", "chess24"];
 
-
     //console.log(this.stars);
     if (this.stars < starThreshold) {
       if (!thresh[this.stars - 1]) {
@@ -1597,7 +1671,7 @@ this.elo=this.calcELO();
   videoFailed() {
     let alert = this.alertCtrl.create({
       title: "Failed To Load Video",
-      message: "Video Ads are not available right now, please try again later",
+      message: "Video Ads are not available right now, please try again later. Sometimes you may need to wait up to 20 min between rewards.",
       buttons: [
         {
           text: "Ok",
@@ -1637,8 +1711,16 @@ this.elo=this.calcELO();
   }
 
   upgradeFeature(name, earned: any = false) {
-    var features:any=["bias","pgn","depth"]
-    var modes:any=["twobytwo","shallow","bestRand","allRand","pieceFocus","swipe","bothSides"]
+    var features: any = ["bias", "pgn", "depth"];
+    var modes: any = [
+      "twobytwo",
+      "shallow",
+      "bestRand",
+      "allRand",
+      "pieceFocus",
+      "swipe",
+      "bothSides",
+    ];
 
     var pre;
     if (earned) {
@@ -1652,34 +1734,35 @@ this.elo=this.calcELO();
 
     var post;
 
-    if (modes.includes(name)){
-post ="A brand new mode has been unlocked in the menu! Check it out!";
-    }else if (features.includes(name)){
-
-      if (name=='bias'){
-post = "Custom difficulty settings have been unlocked! Tweak the AI bias by tapping the settings icon on the main screen below the board.";
-      }else if(name=="pgn"){
-post = "Mid-Game LiChess analysis and copying PGN history has been unlocked! Try by tapping the history icon on the main screen below the board.";
-      }else{
-post = "Custom think times have been unlocked! Tweak by tapping the down arrow icon on the main screen below the board.";
+    if (modes.includes(name)) {
+      post = "A brand new mode has been unlocked in the menu! Check it out!";
+    } else if (features.includes(name)) {
+      if (name == "bias") {
+        post =
+          "Custom difficulty settings have been unlocked! Tweak the AI bias by tapping the settings icon on the main screen below the board.";
+      } else if (name == "pgn") {
+        post =
+          "Mid-Game Chess.com analysis and copying PGN history has been unlocked! Try by tapping the history icon on the main screen below the board.";
+      } else {
+        post =
+          "Custom think times have been unlocked! Tweak by tapping the down arrow icon on the main screen below the board.";
       }
-
-    }else if (isNaN(parseInt(name))) {
-
-if (name=="friendPlay"){
-  post = "<b>Challenge Friends</b> has been unlocked in the menu. Invite your friends to play against you in realtime!";
-}else{
-      post = "A new multiplayer mode has been unlocked in the menu. Try it out!";
-
-}
-
+    } else if (isNaN(parseInt(name))) {
+      if (name == "friendPlay") {
+        post =
+          "<b>Challenge Friends</b> has been unlocked in the menu. Invite your friends to play against you in realtime!";
+      } else {
+        post =
+          "A new multiplayer mode has been unlocked in the menu. Try it out!";
+      }
     } else if (parseInt(name) < 5) {
-      post = "A new difficulty setting has been unlocked in the menu. Try it out!";
+      post =
+        "A new difficulty setting has been unlocked in the menu. Try it out!";
     } else {
       post = 'A new "Think Time" has been unlocked in the menu. Try it out!';
     }
 
-    //if (){} 
+    //if (){}
 
     let alert = this.alertCtrl.create({
       title: "Congratulations!",
@@ -1803,30 +1886,28 @@ if (name=="friendPlay"){
 
   ratchetDifficulty(won) {
     if (won) {
-
-      if (this.handicap<1){
-        this.handicap++
-      }else if (this.numChoices == 2){
-         this.ratchetChoices(3);
-      }else if (this.handicap<3){
-        this.handicap++
-      }else if (this.numChoices==3){
-        this.ratchetChoices(4);
-      }else{
-        this.handicap++
-      }
-
-    } else {
-      if (this.handicap>3){
-        this.handicap--
-      }else if (this.numChoices == 4) {
+      if (this.handicap < 1) {
+        this.handicap++;
+      } else if (this.numChoices == 2) {
         this.ratchetChoices(3);
-      } else if (this.handicap>1) {
-        this.handicap--
+      } else if (this.handicap < 3) {
+        this.handicap++;
       } else if (this.numChoices == 3) {
-         this.ratchetChoices(2);
-      } else{
-       this.handicap--
+        this.ratchetChoices(4);
+      } else {
+        this.handicap++;
+      }
+    } else {
+      if (this.handicap > 3) {
+        this.handicap--;
+      } else if (this.numChoices == 4) {
+        this.ratchetChoices(3);
+      } else if (this.handicap > 1) {
+        this.handicap--;
+      } else if (this.numChoices == 3) {
+        this.ratchetChoices(2);
+      } else {
+        this.handicap--;
       }
     }
 
@@ -2033,6 +2114,11 @@ if (name=="friendPlay"){
         },
       },
     ];
+
+     if (create && thresh.indexOf("friendPlay") > this.stars) {
+        this.starPrompt("friendPlay");
+        return;
+      }
     //var alertWindow
 
     //this.fbFriendPlay(create,code)
@@ -2320,7 +2406,6 @@ if (name=="friendPlay"){
       return;
     }
 
-
     var buttons = [
       {
         text: "Play Online",
@@ -2335,22 +2420,19 @@ if (name=="friendPlay"){
         },
       },
       {
-      text: won ? "Raise Difficulty" : "Lower Difficulty",
-      handler: (data) => {
-        this.ratchetDifficulty(won);
-      }
-    },
-    {
-      text: "Analyze Game",
-      handler: (data) => {  
-        this.pgnExt(this.game.pgn());
-        return false;
-      }
-    }
-
+        text: won ? "Raise Difficulty" : "Lower Difficulty",
+        handler: (data) => {
+          this.ratchetDifficulty(won);
+        },
+      },
+      {
+        text: "Analyze Game",
+        handler: (data) => {
+          this.pgnExt(this.game.pgn());
+          return false;
+        },
+      },
     ];
-
-
 
     if (!draw) {
       this.updateRank(won);
@@ -2376,7 +2458,7 @@ if (name=="friendPlay"){
     var ratio = this.record.wins / (this.record.losses + 1);
     var games = this.record.wins + this.record.losses / 3;
     var difficulty = this.record.totalChoices / (this.record.total + 1);
-    var handicapAvg=this.record.handicap/(this.record.total + 1)
+    var handicapAvg = this.record.handicap / (this.record.total + 1);
     var partOne = Math.pow(ratio, difficulty) + Math.pow(games, 0.2);
 
     var norml =
@@ -2385,12 +2467,12 @@ if (name=="friendPlay"){
 
     var partTwo = this.record.best / (this.record.worst + 1);
 
-    var running=(norml + 2 - partTwo / 2);
+    var running = norml + 2 - partTwo / 2;
 
-    var partThree=handicapAvg*(100-running)/2000
+    var partThree = (handicapAvg * (100 - running)) / 2000;
 
-  running=Math.pow(running,1-partThree)
-    running=Math.pow(running,1.05)
+    running = Math.pow(running, 1 - partThree);
+    running = Math.pow(running, 1.05);
 
     norml = Math.ceil(running);
     if (norml < 1) {
@@ -2423,7 +2505,7 @@ if (name=="friendPlay"){
     var bestmove = message.match(/bestmove\s(\D\d\D\d).?/);
 
     if (bestmove) {
-      if(!this.thinkingTimer){
+      if (!this.thinkingTimer) {
         //the thinking timer has already exhausted. Move will be made by the fallback now. Nothing to do here.
         return;
       }
@@ -2431,10 +2513,11 @@ if (name=="friendPlay"){
       clearTimeout(this.thinkingTimeout);
       this.thinkingTimer = false;
 
-      
-
       this.choices[0] = bestmove[1];
-      if (this.XOR(this.stockfishWhite,this.colorBlackAI) || this.gameType != "ai") {
+      if (
+        this.XOR(this.stockfishWhite, this.colorBlackAI) ||
+        this.gameType != "ai"
+      ) {
         this.asyncChoices();
       } else {
         this.asyncAI();
@@ -2445,25 +2528,23 @@ if (name=="friendPlay"){
       this.choices[parseInt(multipv[1]) - 1] = move[1];
     }
     /**/
-if (depth){
-  if (this.stockfishWhite){
-var pwns=message.match(/cp\s(-?\d+)/);
-if (pwns){
-  this.centipawns=Math.trunc(parseInt(pwns[1])/10)/10;
-}else{
-  this.centipawns="∞"
-}
-
-  }
-  this.currDepth=depth;
-}
-
+    if (depth) {
+      if (this.stockfishWhite) {
+        var pwns = message.match(/cp\s(-?\d+)/);
+        if (pwns) {
+          this.centipawns = Math.trunc(parseInt(pwns[1]) / 10) / 10;
+        } else {
+          this.centipawns = "∞";
+        }
+      }
+      this.currDepth = depth;
+    }
   }
 
-  XOR(foo,bar){
-return ( foo && !bar ) || ( !foo && bar )
+  XOR(foo, bar) {
+    return (foo && !bar) || (!foo && bar);
 
-   // return ( this.colorBlackAI && !this.stockfishWhite ) || (!this.colorBlackAI && this.stockfishWhite);
+    // return ( this.colorBlackAI && !this.stockfishWhite ) || (!this.colorBlackAI && this.stockfishWhite);
   }
 
   initStockfish() {
@@ -2473,8 +2554,7 @@ return ( foo && !bar ) || ( !foo && bar )
     }
     //this.gameMoves=0;
 
-
-    this.stockfish = new Worker("../../assets/stockfish.js");
+    this.stockfish = new Worker("assets/stockfish.js");
     this.stockfish.onmessage = (event) => this.stockfishProcess(event.data);
     this.stockfish.postMessage(
       "setoption name MultiPV value " +
@@ -2484,50 +2564,46 @@ return ( foo && !bar ) || ( !foo && bar )
   }
 
   updateStockfish(FEN: string, depth: any = 20) {
-
     if (this.gameType == "ai" && !this.colorBlackAI) {
-      if (this.stockfishWhite== FEN.includes(" w ")) {
+      if (this.stockfishWhite == FEN.includes(" w ")) {
         console.error("two in a row STOP");
         return;
       }
     }
 
-//console.log(this.stockfishWhite==this.colorBlackAI);
+    //console.log(this.stockfishWhite==this.colorBlackAI);
 
-    if (this.mode=="shallow" || this.mode=="allRand"){
-  depth=1;
+    if (this.mode == "shallow" || this.mode == "allRand") {
+      depth = 1;
     }
-var aiskill=this.aiDepth();
-var playerskill=20;
+    var aiskill = this.aiDepth();
+    var playerskill = 20;
 
-
-if (this.mode=="bothSides"){
-  aiskill=20;
-  playerskill=1;
-}
-console.log(aiskill);
+    if (this.mode == "bothSides") {
+      aiskill = 20;
+      playerskill = 1;
+    }
+    console.log(aiskill);
     this.stockfishWhite = FEN.includes(" w ");
 
-var playersturn=this.XOR(this.stockfishWhite,this.colorBlackAI)
+    var playersturn = this.XOR(this.stockfishWhite, this.colorBlackAI);
 
     if (this.gameType == "ai" && !playersturn) {
-      console.log('ai moving');
-      this.stockfish.postMessage(
-        "setoption name Skill Level value " + aiskill
-      );
+      console.log("ai moving");
+      this.stockfish.postMessage("setoption name Skill Level value " + aiskill);
     } else {
-      this.stockfish.postMessage("setoption name Skill Level value "+playerskill);
+      this.stockfish.postMessage(
+        "setoption name Skill Level value " + playerskill
+      );
     }
 
     this.stockfish.postMessage("position fen " + FEN);
- 
 
     const moveTime =
-      this.delayTime + 300 +
+      this.delayTime +
+      300 +
       (!playersturn && this.gameType == "ai" ? this.aiBalance() : 0);
-    this.stockfish.postMessage(
-      "go depth " + depth + " movetime " + moveTime
-    );
+    this.stockfish.postMessage("go depth " + depth + " movetime " + moveTime);
 
     this.thinkingTimer = true;
     this.thinkingTimeout = setTimeout(() => {
@@ -2548,39 +2624,44 @@ var playersturn=this.XOR(this.stockfishWhite,this.colorBlackAI)
   }
 
   aiBalance() {
-
-//return 10000-this.delayTime; //max of 10 seconds
-/**/
+    //return 10000-this.delayTime; //max of 10 seconds
+    /**/
     var x = (101 - this.percentile() - 50) * 25;
     if (x > 0) {
-      return x; 
+      return x;
     } else {
       return 0;
     }
-
-
   }
 
-  aiDepth(){
-var depth=this.AISkill();
+  aiDepth() {
+    var depth = this.AISkill();
 
+    if (this.record.wins == 0) {
+      depth = 0;
+    }
 
-if (this.record.wins==0){depth=0}
+    depth = depth + this.handicap;
 
-depth=depth+this.handicap;
+    if (
+      this.mode == "bestRand" ||
+      this.mode == "shallow" ||
+      this.mode == "pieceFocus"
+    ) {
+      depth += 2;
+    }
 
-if (this.mode=="bestRand" || this.mode=="shallow" || this.mode=="pieceFocus"){
-  depth+=2;
-}
+    if (this.colorBlackAI) {
+      depth -= 1;
+    }
 
-if (this.colorBlackAI){
-  depth-=1;
-}
+    if (depth > 20) {
+      depth = 20;
+    } else if (depth < 0) {
+      depth = 0;
+    }
 
-if (depth>20){depth=20}else if (depth<0){depth=0}
-
-
-    return Math.floor(depth)
+    return Math.floor(depth);
   }
 
   calcELO() {
@@ -2596,7 +2677,6 @@ if (depth>20){depth=20}else if (depth<0){depth=0}
 
     return log;
   }
-
 
   ngOnInit() {}
 
@@ -2635,11 +2715,13 @@ if (depth>20){depth=20}else if (depth<0){depth=0}
       this.setData();
     }
 
-    if (FEN==newGameFEN){
-      this.moveHistory=[];
-      this.newboardgamestate=(newGameFEN=="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    }else{
-      this.newboardgamestate=false;
+    if (FEN == newGameFEN) {
+      this.moveHistory = [];
+      this.newboardgamestate =
+        newGameFEN ==
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    } else {
+      this.newboardgamestate = false;
     }
     //console.log('newGame');
     this.removeHighlighting("opp");
@@ -2654,12 +2736,11 @@ if (depth>20){depth=20}else if (depth<0){depth=0}
     //console.log(this.game);
     this.lastchoice = { move: null, rank: null };
 
-if (this.colorBlackAI){
-  this.moveAI();
-}else{
-    this.getChoices(this.gameType == "ai");
+    if (this.colorBlackAI) {
+      this.moveAI();
+    } else {
+      this.getChoices(this.gameType == "ai");
     }
-
   }
 
   isMoveWhite(move) {
@@ -2677,13 +2758,29 @@ if (this.colorBlackAI){
   getChoices(auto: any = true) {
     console.log("GETCHOICES", this.game.fen());
     /**/
-if (((this.game.fen().includes(" b ") && !this.colorBlackAI)||(this.game.fen().includes(" w ") && this.colorBlackAI)) && this.gameType == "ai") {
+    if (
+      ((this.game.fen().includes(" b ") && !this.colorBlackAI) ||
+        (this.game.fen().includes(" w ") && this.colorBlackAI)) &&
+      this.gameType == "ai"
+    ) {
       console.log(this.gameType);
       console.log("ignoring Input, self correction?");
       this.corrupted();
       return;
     }
 
+    /*
+if (this.game.fen().includes(' b ')){
+console.log('waiting for this.game.fen() to switch');
+setTimeout(()=>{
+this.getChoices();
+},500)
+
+ return;
+}else{
+   this.updateStockfish(this.game.fen());
+}
+*/
 
     // playerTurn
     if (this.game.game_over()) {
@@ -2708,8 +2805,10 @@ if (((this.game.fen().includes(" b ") && !this.colorBlackAI)||(this.game.fen().i
       return;
     }
 
-    if (this.stockfishWhite == this.game.fen().includes(" w ") &&
-      this.gameType == "ai" && !this.colorBlackAI
+    if (
+      this.stockfishWhite == this.game.fen().includes(" w ") &&
+      this.gameType == "ai" &&
+      !this.colorBlackAI
     ) {
       console.log("stopping Choice getting");
       return;
@@ -2732,16 +2831,11 @@ if (((this.game.fen().includes(" b ") && !this.colorBlackAI)||(this.game.fen().i
 
   removeHighlighting(cssDef) {
     Array.from(document.querySelectorAll(".square-55d63")).forEach((square) => {
- square.classList.remove("highlight-" + cssDef+"-default");
- square.classList.remove("highlight-" + cssDef+"-frozen");
- square.classList.remove("highlight-" + cssDef+"-lime");
- square.classList.remove("highlight-" + cssDef+"-leipzig");
- square.classList.remove("highlight-" + cssDef+"-chess24");
-
-
-
-
-
+      square.classList.remove("highlight-" + cssDef + "-default");
+      square.classList.remove("highlight-" + cssDef + "-frozen");
+      square.classList.remove("highlight-" + cssDef + "-lime");
+      square.classList.remove("highlight-" + cssDef + "-leipzig");
+      square.classList.remove("highlight-" + cssDef + "-chess24");
     });
   }
 
@@ -2754,12 +2848,12 @@ if (((this.game.fen().includes(" b ") && !this.colorBlackAI)||(this.game.fen().i
     var sq = document.querySelector(".square-" + square);
 
     if (sq) {
-      sq.className += " " + "highlight-" + cssDef+"-"+this.color;
+      sq.className += " " + "highlight-" + cssDef + "-" + this.color;
     }
   }
 
   asyncChoices(auto: any = true) {
-   // console.log("asyncChoices: ", this.choices);
+    // console.log("asyncChoices: ", this.choices);
     var arr = [];
     this.selected = 999;
     //------------------------------------
@@ -2776,10 +2870,10 @@ if (((this.game.fen().includes(" b ") && !this.colorBlackAI)||(this.game.fen().i
 
     //console.log("before process arr ", this.gameType, this.choices.map(this.isMoveWhite.bind(this)), this.playerOne);
     this.choices.forEach((c, i) => {
-if (c && !written.includes(c)) {
+      if (c && !written.includes(c)) {
         if (
           this.gameType == "local" ||
-          this.XOR(this.isMoveWhite(c),this.colorBlackAI) ||
+          this.XOR(this.isMoveWhite(c), this.colorBlackAI) ||
           !this.playerOne
         ) {
           arr.push({ choice: c, rank: written.length + 1 });
@@ -2789,63 +2883,69 @@ if (c && !written.includes(c)) {
     });
     /**/
 
+    //if (Math.random()>.5){arr=[]} // DEBUGGGG
 
-      //if (Math.random()>.5){arr=[]} // DEBUGGGG
+    if (arr.length == 0 && !this.repair) {
+      console.log("empty array! attempting repair");
+      this.repair = true;
+      this.initStockfish();
+      //console.error(this.thinking);
+      this.stockfishWhite = false;
+      setTimeout(() => {
+        this.getChoices();
+      }, 150);
 
-      if (arr.length == 0 && !this.repair) {
-        console.log("empty array! attempting repair");
-        this.repair = true;
-        this.initStockfish();
-        //console.error(this.thinking);
-        this.stockfishWhite = false;
-        setTimeout(() => {
-          this.getChoices();
-        }, 150);
-
-        return;
-      } else {
-        //console.log(arr);
-        this.repair = false;
-      }
-
+      return;
+    } else {
+      //console.log(arr);
+      this.repair = false;
+    }
 
     if (arr.length == 0) {
       console.error("Stockfish returned NO moves");
-      this.currDepth=0;
+      this.currDepth = 0;
       //alert('stockfish returned NO moves');
     }
 
+    if (this.newboardgamestate) {
+      arr = [];
 
+      var bst = this.shuffle(bestWhiteOpenings).slice(
+        0,
+        Math.floor(this.numChoices / 2)
+      );
 
-    if (this.newboardgamestate){
-var moves=this.shuffle(whiteOpenings).slice(0,this.numChoices)
-console.log(moves);
-arr=[]
+      bst.forEach((move) => {
+        arr.push({ choice: move, rank: -1 });
+      });
 
-moves.forEach((move)=>{
-  arr.push({choice:move,rank:-1})
-})
+      var gd = this.shuffle(goodWhiteOpenings).slice(
+        0,
+        this.numChoices - bst.length
+      );
 
+      gd.forEach((move) => {
+        arr.push({ choice: move, rank: -2 });
+      });
+
+      arr = this.shuffle(arr);
     }
 
-if (this.mode=="bestRand" && arr.length>0){
-var temp=arr[0]
-arr=[]
-arr[0]=temp;
-
+    if (this.mode == "bestRand" && arr.length > 0) {
+      var temp = arr[0];
+      arr = [];
+      arr[0] = temp;
     }
 
-    if (this.mode=="allRand"){
-      arr=[];
+    if (this.mode == "allRand") {
+      arr = [];
     }
 
-
-
- if (this.mode=="pieceFocus"){
-this.finalChoices=this.pieceModeChoices(arr[0])
- }else{
-   this.finalChoices=this.shuffle(this.fillOutLegal(arr,written));
- }
+    if (this.mode == "pieceFocus") {
+      this.finalChoices = this.pieceModeChoices(arr[0]);
+    } else {
+      this.finalChoices = this.shuffle(this.fillOutLegal(arr, written));
+    }
 
     this.thinking = false;
     //console.log(this.finalChoices)
@@ -2864,14 +2964,17 @@ this.finalChoices=this.pieceModeChoices(arr[0])
 
     if (this.thinking) {
       return;
-    }    
-
-    if (this.highlighted!==0){
-      this.showOldState(null,0);
-      return;     
     }
 
-    if (this.waitMove || (this.finalChoices[0] == 1 && !this.newboardgamestate)) {
+    if (this.highlighted !== 0) {
+      this.showOldState(null, 0);
+      return;
+    }
+
+    if (
+      this.waitMove ||
+      (this.finalChoices[0] == 1 && !this.newboardgamestate)
+    ) {
       return;
     }
 
@@ -2882,7 +2985,7 @@ this.finalChoices=this.pieceModeChoices(arr[0])
     } else {
       this.selected++;
     }
-//console.log('hello');
+    //console.log('hello');
     this.prevMove(this.finalChoices[this.selected], this.selected, auto);
   }
 
@@ -2899,9 +3002,9 @@ this.finalChoices=this.pieceModeChoices(arr[0])
       return;
     }
 
-    if (this.highlighted!==0){
-      this.showOldState(null,0);
-      return;     
+    if (this.highlighted !== 0) {
+      this.showOldState(null, 0);
+      return;
     }
 
     console.log(this.finalChoices);
@@ -2925,40 +3028,45 @@ this.finalChoices=this.pieceModeChoices(arr[0])
 
   actuallyMakeMove = _.throttle(this.actuallyMakeMoveInner.bind(this), 2500);
 
-
-
   actuallyMakeMoveInner() {
     this.lastchoice.rank = this.finalChoices[this.selected].rank;
     this.lastchoice.move = this.finalChoices[this.selected].choice;
     //this.gameMoves++
 
     if (this.gameType !== "local") {
-      if (this.mode=="nBest"){
-      this.record.total++;
-      this.record.handicap+=this.handicap;
-    }else{
-      this.record.modeTotals[this.mode]++
-    }
+      if (this.mode == "nBest") {
+        this.record.total++;
+        this.record.handicap += this.handicap;
+      } else {
+        this.record.modeTotals[this.mode]++;
+      }
 
-      if (this.record.total==171 && !this.newsletterSigned){
+      if (this.record.total == 171 && !this.newsletterSigned) {
         this.newsletterPop();
       }
       //console.log(this.lastchoice.rank+1)
+
       if (this.mode=="nBest"){
+
+if (!this.newboardgamestate){
       if (this.lastchoice.rank == 1 && this.finalChoices.length > 1) {
         this.record.best++;
       } else if (this.lastchoice.rank == this.numChoices) {
-        //console.log('ahhhh');
         this.record.worst++;
         this.apticCall(); // TEST??????
       }
+}else if (this.lastchoice.rank==-1){
+this.record.best++;
+}
+
     }else if (this.mode=="bestRand"){
 if (this.lastchoice.rank !== 1){
   this.apticCall(); // TEST??????
 }
     }
+
       this.percent = this.percentile();
-      this.elo=this.calcELO();
+      this.elo = this.calcELO();
       this.record.totalChoices += this.numChoices - 1;
     }
     //console.log(this.lastchoice);
@@ -2969,12 +3077,12 @@ if (this.lastchoice.rank !== 1){
       promotion: "q",
     };
     this.game.move(moveObj);
-    this.newboardgamestate=false;
+    this.newboardgamestate = false;
     this.thinking = true;
 
-setTimeout(()=>{
-this.pushMoveHistory(moveObj,this.lastchoice.rank == 1);
-},500)
+    setTimeout(() => {
+      this.pushMoveHistory(moveObj, this.lastchoice.rank == 1);
+    }, 500);
     //}
     //this.incrAds()
 
@@ -2982,7 +3090,6 @@ this.pushMoveHistory(moveObj,this.lastchoice.rank == 1);
     //this.setTurn('b');
     this.choices = [null, null, null, null];
     this.removeTimer();
-
 
     if (this.gameType == "local") {
       this.whiteBottom = !this.whiteBottom;
@@ -3040,70 +3147,105 @@ this.pushMoveHistory(moveObj,this.lastchoice.rank == 1);
     }
   }
 
+  lookupOpening(opening) {
+    if (!opening) {
+      opening = this.currOpening.w;
+    }
 
-lookupOpening(opening){
-  if (!opening){opening=this.currOpening.w}
-this.openLink('https://lichess.org/study/search?q="'+opening.name+'"');
-}
-
-  pushMoveHistory(move,best:any=false){
-
-var fen=this.game.fen();
-var pgn=this.game.pgn()
-
-if (fen.includes(" w ")){
- this.currOpening.w=openings.w[fen.replace(/\sw\s.+/g,'')]
-}else if (fen.includes(" b ")){
-this.currOpening.b=openings.b[fen.replace(/\sb\s.+/g,'')]
-}
-
-
-if (this.mobile){return}
-
-var get= this.game.get(move.to);
-var obj={pgn:pgn,best:best,from:move.from,dest:move.to,piece:get.type.toUpperCase(),color:get.color,adv:(this.centipawns>0?'+'+String(this.centipawns):String(this.centipawns)),fen:fen}
-
-this.moveHistory.push(obj)
+    if (opening.link) {
+      this.openLink(
+        "https://www.chess.com/openings/" + opening.link + "?ref_id=5188186"
+      );
+    } else {
+      this.openLink(
+        "https://www.chess.com/openings/search?keyword=" +
+          opening.name.split(" ")[0] +
+          "&ref_id=5188186"
+      );
+    }
   }
 
-
-  showOldState(move,i){
-if (this.highlighted==i){return}
-this.highlighted=i;
-
-if (!move){
-  move=this.moveHistory[0]
-}
+  pushMoveHistory(move, best: any = false) {
+    var fen = this.game.fen();
+    var pgn = this.game.pgn();
+    var pgnsan = pgn.replace(/ /g, "");
 
 
-this.position = move.fen;
-this.removeHighlighting("player");
-this.removeHighlighting("opp");
-this.highlightSquare(move.dest, (move.color=='w'?"player":"opp"));
-this.highlightSquare(move.from, (move.color=='w'?"player":"opp"));
+      if (fen.includes(" w ")) {
+    
+        this.currOpening.w = null;
+      } else if (fen.includes(" b ")) {
+        this.currOpening.b = null;
+    
+      }
+ 
 
+    if (this.mobile) {
+      return;
+    }
 
+    var get = this.game.get(move.to);
+    var obj = {
+      pgn: pgn,
+      best: best,
+      from: move.from,
+      dest: move.to,
+      piece: get.type.toUpperCase(),
+      color: get.color,
+      adv:
+        this.centipawns > 0
+          ? "+" + String(this.centipawns)
+          : String(this.centipawns),
+      fen: fen,
+    };
 
+    this.moveHistory.push(obj);
   }
 
-  openLink(url){
-if (this.mobile){
-  window["open2"](url,"_system")
-}else{
-  window.open(url,"_blank")
-}
+  showOldState(move, i) {
+    if (this.highlighted == i) {
+      return;
+    }
+    this.highlighted = i;
+
+    if (!move) {
+      move = this.moveHistory[0];
+    }
+
+    this.position = move.fen;
+    this.removeHighlighting("player");
+    this.removeHighlighting("opp");
+    this.highlightSquare(move.dest, move.color == "w" ? "player" : "opp");
+    this.highlightSquare(move.from, move.color == "w" ? "player" : "opp");
   }
 
-  showStats(mobile:any=false) {
+  openLink(url) {
+    if (this.mobile) {
+      window["open2"](url, "_system");
+    } else {
+      if (window["require"]) {
+        window["require"]("electron").shell.openExternal(url);
+      } else {
+        window.open(url, "_blank");
+      }
+    }
+  }
 
-if (mobile && (this.moveHistory.length==1 || this.record.total==0 || this.currOpening.b || this.currOpening.w)){
-  return;
-}
+  showStats(mobile: any = false) {
+    if (
+      mobile &&
+      (this.moveHistory.length == 1 ||
+        this.record.total == 0 ||
+        this.currOpening.b ||
+        this.currOpening.w)
+    ) {
+      return;
+    }
 
-   if (this.alertBox && this.alertBox._state==3){
-  this.alertBox.dismiss();
-  return;
-}
+    if (this.alertBox && this.alertBox._state == 3) {
+      this.alertBox.dismiss();
+      return;
+    }
 
     this.alertBox = this.alertCtrl.create({
       title: "Stats", // Or not
@@ -3134,12 +3276,12 @@ if (mobile && (this.moveHistory.length==1 || this.record.total==0 || this.currOp
           100 +
           1) +
         "</b><br><br>Your average difficulty bias is <b>" +
-        (Math.floor(
+        Math.floor(
           (this.record.handicap /
             (this.record.total == 0 ? 1 : this.record.total)) *
             10000
         ) /
-          10000) +
+          10000 +
         "</b><br><br>You have <b>" +
         this.record.wins +
         "</b> wins and <b>" +
@@ -3150,45 +3292,62 @@ if (mobile && (this.moveHistory.length==1 || this.record.total==0 || this.currOp
         this.calcELO() +
         "</b>",
 
+      /*
+      buttons: [{
+          text: "Ok",
+          handler: (data) => {}
+        },
+{
+          text: "Share",
+          handler: (data) => {
+            alert('social?');
+
+          }}]
+*/
     });
 
     this.alertBox.present();
   }
 
-pieceModeChoices(best){
-console.log(best);
-var legalMoves = this.shuffle(this.game.moves({ verbose: true }));
-var choices=[best];
+  pieceModeChoices(best) {
+    console.log(best);
+    var legalMoves = this.shuffle(this.game.moves({ verbose: true }));
+    var choices = [best];
 
- legalMoves.forEach((move) => {
-
-           if (move.from==best.choice.substring(0, 2) && best.choice!==move.from+move.to){
- choices.push({ choice: move.from+move.to, rank: 0 });
-           }
+    legalMoves.forEach((move) => {
+      if (
+        move.from == best.choice.substring(0, 2) &&
+        best.choice !== move.from + move.to
+      ) {
+        choices.push({ choice: move.from + move.to, rank: 0 });
+      }
     });
 
-     if (choices.length > 8) {
+    if (choices.length > 8) {
       choices = choices.filter((a) => a.rank <= this.numChoices);
-      choices=choices.slice(0,8)
+      choices = choices.slice(0, 8);
     }
 
+    return this.shuffle(choices);
+  }
 
-return this.shuffle(choices)
-
-}
-
-fillOutLegal(arr,written){
-if (arr.length == this.numChoices){return arr}
+  fillOutLegal(arr, written) {
+    if (arr.length == this.numChoices) {
+      return arr;
+    }
     // fill out empty moves with random moves....
     var legalMoves = this.shuffle(this.game.moves({ verbose: true }));
 
     legalMoves.forEach((move) => {
       var concat = move.from + move.to;
-// bias toward moves that include promotion or capture
-      if ((move.flags.includes("p") || move.flags.includes("c")) && !written.includes(concat)) {
-        arr.push({ choice: concat, rank: .5 });
+      // bias toward moves that include promotion or capture
+      if (
+        (move.flags.includes("p") || move.flags.includes("c")) &&
+        !written.includes(concat)
+      ) {
+        arr.push({ choice: concat, rank: 0.5 });
         written.push(concat);
-      }else if (arr.length < this.numChoices) {
+      } else if (arr.length < this.numChoices) {
         if (!written.includes(concat)) {
           arr.push({ choice: concat, rank: 0 });
           written.push(concat);
@@ -3198,9 +3357,13 @@ if (arr.length == this.numChoices){return arr}
 
     if (arr.length > this.numChoices) {
       arr = arr.filter((a) => a.rank <= this.numChoices);
-      arr=arr.slice(0,this.numChoices)
+      arr = arr.slice(0, this.numChoices);
     }
-arr.forEach((move)=>{if (move.rank==.5){move.rank=0}})
+    arr.forEach((move) => {
+      if (move.rank == 0.5) {
+        move.rank = 0;
+      }
+    });
 
     return arr;
   }
@@ -3221,7 +3384,7 @@ arr.forEach((move)=>{if (move.rank==.5){move.rank=0}})
       return el != null;
     });
 
-    if (this.XOR(this.isMoveWhite(this.choices[0]),this.colorBlackAI)) {
+    if (this.XOR(this.isMoveWhite(this.choices[0]), this.colorBlackAI)) {
       console.log("players got switched 1468");
       this.corrupted();
       //return;
@@ -3238,12 +3401,13 @@ arr.forEach((move)=>{if (move.rank==.5){move.rank=0}})
       move = this.choices[0]
     }
 */
-    if (typeof move == "undefined" || this.mode=="allRand") {
-if (!move){console.error("MOVE UNDEFINED, picking random");}
-      
-move=this.fillOutLegal([],[])[0].choice
-    }
+    if (typeof move == "undefined" || this.mode == "allRand") {
+      if (!move) {
+        console.error("MOVE UNDEFINED, picking random");
+      }
 
+      move = this.fillOutLegal([], [])[0].choice;
+    }
 
     //console.error("move is sometimes UNDEFINED");
     //console.log(move)
@@ -3253,7 +3417,7 @@ move=this.fillOutLegal([],[])[0].choice
     this.highlightSquare(move.substring(0, 2), "opp");
     this.highlightSquare(move.substring(2, 4), "opp");
     //console.log(move);
-var moveObj = {
+    var moveObj = {
       from: move.substring(0, 2),
       to: move.substring(2, 4),
       promotion: "q",
@@ -3261,22 +3425,20 @@ var moveObj = {
 
     this.game.move(moveObj);
 
-setTimeout(()=>{
-  this.pushMoveHistory(moveObj);
-  if (this.gameType !== "ai"){
-  if (this.storedFEN!==null){
-    this.storedFEN=null;
-    this.setData()
-  }
-}else{
-this.storedFEN=this.game.fen()
-this.setData();
-}
-},500)
+    setTimeout(() => {
+      this.pushMoveHistory(moveObj);
+      if (this.gameType !== "ai") {
+        if (this.storedFEN !== null) {
+          this.storedFEN = null;
+          this.setData();
+        }
+      } else {
+        this.storedFEN = this.game.fen();
+        this.setData();
+      }
+    }, 500);
 
-
-
-    this.newboardgamestate=false;
+    this.newboardgamestate = false;
     //this.gameMoves++
     //this.gameMoves++
     this.choices = [null, null, null, null];
@@ -3341,7 +3503,7 @@ this.setData();
   }
 
   showOfflineAd() {
-    var ad = offlineProjects[this.offlineAdIndex];
+    var ad = offlineAds[this.offlineAdIndex];
 
     let alertWin = this.alertCtrl.create({
       title: ad.title,
@@ -3362,14 +3524,14 @@ this.setData();
           text: ad.button,
           handler: () => {
             var url = this.iOS ? ad.iOS : ad.android;
-            this.openLink(url)
+            this.openLink(url);
           },
         },
       ],
     });
     alertWin.present();
 
-    if (offlineProjects.length - 1 == this.offlineAdIndex) {
+    if (offlineAds.length - 1 == this.offlineAdIndex) {
       this.offlineAdIndex = 0;
     } else {
       this.offlineAdIndex++;
@@ -3414,120 +3576,146 @@ this.setData();
     }
   }
 
+  bannerAds() {
+    /*
+console.log(this.supressAds)
+  this.admobpro.createBanner({ adId: this.iOS?'ca-app-pub-4948916875810757/7436221485':'ca-app-pub-4948916875810757/9768044814', autoShow: !this.supressAds, isTesting: true, overlap:true,position:this.admobpro.AD_POSITION.BOTTOM_CENTER })
+      .then(() => {
 
+      }).catch(e => {
+        console.log("error", e)
+      });
+      */
+  }
 
-  cp(){
+  cp() {
+    if (this.alertBox && this.alertBox._state == 3) {
+      this.alertBox.dismiss();
+      return;
+    }
 
-if (this.alertBox && this.alertBox._state==3){
-  this.alertBox.dismiss();
-  return;
-}
-
-   this.alertBox = this.alertCtrl.create({
+    this.alertBox = this.alertCtrl.create({
       title: "Advantage",
-      subTitle:"An Estimate of Who is Ahead",
-      cssClass:'stats',
+      subTitle: "An Estimate of Who is Ahead",
+      cssClass: "stats",
       message:
-        "A positive score (\"<b>+</b>\") means white has a stronger position where a negative number (\"<b>-</b>\") implies black is favored. The value roughly translates to \"<b>pawns</b>\" where a knight of bishop has a value of 3 pawns, a rook is given a value of 5 pawns, and a queen is worth 9. In other words, it is estimated that "+(this.centipawns>0?"white":"black") + " is currently ahead by <b>"+(this.moveHistory.length>0?this.centipawns:"0.3")+ "</b> pawns. White is estimated to have an advantage over black at the beginning of the game since they get to go first. You can toggle your color against the AI below.",
+        'A positive score ("<b>+</b>") means white has a stronger position where a negative number ("<b>-</b>") implies black is favored. The value roughly translates to "<b>pawns</b>" where a knight of bishop has a value of 3 pawns, a rook is given a value of 5 pawns, and a queen is worth 9. In other words, it is estimated that ' +
+        (this.centipawns > 0 ? "white" : "black") +
+        " is currently ahead by <b>" +
+        (this.moveHistory.length > 0 ? this.centipawns : "0.3") +
+        "</b> pawns. White is estimated to have an advantage over black at the beginning of the game since they get to go first. You can toggle your color against the AI below.",
 
-inputs:[
-   {
-        type: 'radio',
-        label: 'White',
-        value: 'white',
-        checked: this.whiteBottom
-    },{
-        type: 'radio',
-        label: 'Black',
-        value: 'black',
-        checked: !this.whiteBottom
-    }],
+      inputs: [
+        {
+          type: "radio",
+          label: "White",
+          value: "white",
+          checked: this.whiteBottom,
+        },
+        {
+          type: "radio",
+          label: "Black",
+          value: "black",
+          checked: !this.whiteBottom,
+        },
+      ],
 
       buttons: [
-      {
+        {
           text: "Ok",
           handler: (data) => {
-
-if ((data=='white')==this.whiteBottom){
-
-}else{
-     if (this.gameType!=="ai"){
-              this.pop("Error","In multiplayer mode, color is assigned according to whether you are the one inviting a friend to a game (white) or whether you are accepting (black). For random opponents it depends if you were the first in the queue.")
-            }else{
-// abandonGame
-this.abandonGame(true,"ai",false,{ fen: newGameFEN },data=='black')
-   }
-}
-          }
+            if ((data == "white") == this.whiteBottom) {
+            } else {
+              if (this.gameType !== "ai") {
+                this.pop(
+                  "Error",
+                  "In multiplayer mode, color is assigned according to whether you are the one inviting a friend to a game (white) or whether you are accepting (black). For random opponents it depends if you were the first in the queue."
+                );
+              } else {
+                // abandonGame
+                this.abandonGame(
+                  true,
+                  "ai",
+                  false,
+                  { fen: newGameFEN },
+                  data == "black"
+                );
+              }
+            }
+          },
         },
       ],
     });
     this.alertBox.present();
   }
 
-  dpth(){
-
-    if (this.mode=="allRand"){
-      this.pop("Stockfish Unavailable","Stockfish is turned off in this mode as all moves are merely random. Change the game mode to use this setting.")
+  dpth() {
+    if (this.mode == "allRand") {
+      this.pop(
+        "Stockfish Unavailable",
+        "Stockfish is turned off in this mode as all moves are merely random. Change the game mode to use this setting."
+      );
       return;
     }
 
-    if (this.currDepth==0 && !this.thinking){
-        console.log("empty array! attempting repair");
-        this.repair = false;
-        this.initStockfish();
-        //console.error(this.thinking);
-        this.stockfishWhite = false;
-        setTimeout(() => {
-          this.getChoices();
-        }, 150);
+    if (this.currDepth == 0 && !this.thinking) {
+      console.log("empty array! attempting repair");
+      this.repair = false;
+      this.initStockfish();
+      //console.error(this.thinking);
+      this.stockfishWhite = false;
+      setTimeout(() => {
+        this.getChoices();
+      }, 150);
 
-return;
+      return;
     }
 
-if (this.alertBox && this.alertBox._state==3){
-  this.alertBox.dismiss();
-  return;
-}
+    if (this.alertBox && this.alertBox._state == 3) {
+      this.alertBox.dismiss();
+      return;
+    }
 
-this.alertBox = this.alertCtrl.create({
+    this.alertBox = this.alertCtrl.create({
       title: "Think Time & Depth",
-      message:"The longer your device takes to compute the best move, the better quality moves you will get, indicated by a depth score of 1-20.",
-         inputs:[
-    {
-        type: 'radio',
-        label: '500 ms',
-        value: '200',
-        checked: this.delayTime==200
-    },{
-        type: 'radio',
-        label: '1 sec',
-        value: '700',
-        checked: this.delayTime==700
-    },{
-        type: 'radio',
-        label: '2 sec',
-        value: '1700',
-        checked: this.delayTime==1700
-    },{
-        type: 'radio',
-        label: '5 sec',
-        value: '4700',
-        checked: this.delayTime==4700
-    }],
+      message:
+        "The longer your device takes to compute the best move, the better quality moves you will get, indicated by a depth score of 1-20.",
+      inputs: [
+        {
+          type: "radio",
+          label: "500 ms",
+          value: "200",
+          checked: this.delayTime == 200,
+        },
+        {
+          type: "radio",
+          label: "1 sec",
+          value: "700",
+          checked: this.delayTime == 700,
+        },
+        {
+          type: "radio",
+          label: "2 sec",
+          value: "1700",
+          checked: this.delayTime == 1700,
+        },
+        {
+          type: "radio",
+          label: "5 sec",
+          value: "4700",
+          checked: this.delayTime == 4700,
+        },
+      ],
       buttons: [
-     
         {
           text: "ok",
           handler: (data) => {
-
-
-            if (this.delayTime!==parseInt(data)){
-   if (thresh.indexOf('depth') > this.stars) {
-      this.starPrompt("depth");
-    }else{
-              this.delayTime=parseInt(data);
-              this.setData();
+            if (this.delayTime !== parseInt(data)) {
+              if (thresh.indexOf("depth") > this.stars) {
+                this.starPrompt("depth");
+              } else {
+                this.delayTime = parseInt(data);
+                this.setData();
               }
             }
           },
@@ -3535,67 +3723,65 @@ this.alertBox = this.alertCtrl.create({
       ],
     });
 
-
-
-
     this.alertBox.present();
   }
 
-  hdnicp(){
-    if (this.alertBox && this.alertBox._state==3){
-  this.alertBox.dismiss();
-  return;
-}
-this.alertBox = this.alertCtrl.create({
+  hdnicp() {
+    if (this.alertBox && this.alertBox._state == 3) {
+      this.alertBox.dismiss();
+      return;
+    }
+    this.alertBox = this.alertCtrl.create({
       title: "AI Bias",
-      message:"Lazy Chess is carefully designed to scale the ai difficulty to your abilities and rank, but you can manually tweak the difficulty below. <i>Positive values are harder, negative values are easier.</i><br><br>Current AI Skill: <b>"+this.aiDepth()+"</b> (out of 20)",
+      message:
+        "Lazy Chess is carefully designed to scale the ai difficulty to your abilities and rank, but you can manually tweak the difficulty below. <i>Positive values are harder, negative values are easier.</i><br><br>Current AI Skill: <b>" +
+        this.aiDepth() +
+        "</b> (out of 20)",
 
- inputs:[
- {
-        type: 'radio',
-        label: 'Lower Skill Level',
-        value: '-1',
-        checked: false
-    },
-{
-        type: 'radio',
-        label: 'Keep Level '+this.handicap,
-        value: '0',
-        checked: true
-    },{
-        type: 'radio',
-        label: 'Raise Skill Level',
-        value: '1',
-        checked: false
-    }],
+      inputs: [
+        {
+          type: "radio",
+          label: "Lower Skill Level",
+          value: "-1",
+          checked: false,
+        },
+        {
+          type: "radio",
+          label: "Keep Level " + this.handicap,
+          value: "0",
+          checked: true,
+        },
+        {
+          type: "radio",
+          label: "Raise Skill Level",
+          value: "1",
+          checked: false,
+        },
+      ],
 
       buttons: [
         {
           text: "Ok",
           handler: (data) => {
+            if (data !== 0 && thresh.indexOf("bias") > this.stars) {
+              this.starPrompt("bias");
+            }
 
-
-if (data!==0 && thresh.indexOf('bias') > this.stars){
-      this.starPrompt("bias");
-}
-
-if (data>0){
-  if (this.AISkill()+1>21){
-    this.reachedLimit(true)
-    return;
-  }
-  this.handicap++
-     this.setData();
-}else if (data<0){
-    if (this.AISkill()-1<1){
-    this.reachedLimit(false)
-    return;
-  }
-this.handicap--
-   this.setData();
-}
-
-
+            if (data > 0) {
+              if (this.AISkill() + 1 > 21) {
+                this.reachedLimit(true);
+                return;
+              }
+              this.handicap++;
+              this.setData();
+            } else if (data < 0) {
+              if (this.AISkill() - 1 < 1) {
+                this.reachedLimit(false);
+                return;
+              }
+              this.handicap--;
+              this.setData();
+            }
           },
         },
       ],
@@ -3603,131 +3789,108 @@ this.handicap--
     this.alertBox.present();
   }
 
-reachedLimit(raise){
-   let alert = this.alertCtrl.create({
+  reachedLimit(raise) {
+    let alert = this.alertCtrl.create({
       title: "Limit Reached",
       //subTitle:"An Estimate of Who is Ahead",
-      message:"Difficulty cannot be "+(raise?'raised':'lowered')+" more than it is. Difficulty is determined by depth for which stockfish accepts a value between 1-20. The depth given to the ai plus your bias is outside this value. Try raising or lowering the depth / think time setting instead to compensate.",
+      message:
+        "Difficulty cannot be " +
+        (raise ? "raised" : "lowered") +
+        " more than it is. Difficulty is determined by depth for which stockfish accepts a value between 1-20. The depth given to the ai plus your bias is outside this value. Try raising or lowering the depth / think time setting instead to compensate.",
       buttons: [
         {
           text: "Ok",
-          handler: () => {
-          },
+          handler: () => {},
         },
       ],
     });
     alert.present();
-}
-
-
-  history(){
-    if (this.alertBox && this.alertBox._state==3){
-  this.alertBox.dismiss();
-  return;
-}
-
-var pgn=this.game.pgn();
-
-if (!pgn){
-
-this.alertBox = this.alertCtrl.create({
-      title: "Move History",
-      message:
-        "Once you or your opponent have played, you can review a <b>PGN</b> of your game, copy it to your clipboard and even analyze it on <b>lichess.com</b>.",
-      buttons: [
-        {
-          text: "Ok",
-          handler: () => {
-          },
-        },
-      ],
-    });
-    this.alertBox.present();
-
-
-
-}else{
-
-this.alertBox = this.alertCtrl.create({
-      title: "PGN Move History",
-      //subTitle:"A PGN of the game is below",
-      message:pgn,
-      buttons: [
-      {
-          text: "Copy to Clipboard",
-          handler: () => {
-if (thresh.indexOf('pgn') > this.stars) {
-      this.starPrompt("pgn");
-      return;
-    }
-    let selBox = document.createElement('textarea');
-    selBox.style.position = 'fixed';
-    selBox.style.left = '0';
-    selBox.style.top = '0';
-    selBox.style.opacity = '0';
-    selBox.value = pgn;
-    document.body.appendChild(selBox);
-    selBox.focus();
-    selBox.select();
-    document.execCommand('copy');
-    document.body.removeChild(selBox);
-         }
-       },
-        {
-          text: "Analyze Game",
-          handler: () => {
-if (thresh.indexOf('pgn') > this.stars) {
-      this.starPrompt("pgn");
-      return;
-    }
-            this.pgnExt(pgn);
-          },
-        },
-      ],
-    });
- this.alertBox.present();
-
-}
   }
 
-  pgnExt(pgn){
+  history() {
+    if (this.alertBox && this.alertBox._state == 3) {
+      this.alertBox.dismiss();
+      return;
+    }
 
-if (!window.navigator.onLine) {
+    var pgn = this.game.pgn();
+
+    if (!pgn) {
+      this.alertBox = this.alertCtrl.create({
+        title: "Move History",
+        message:
+          "Once you or your opponent have played, you can review a <b>PGN</b> of your game, copy it to your clipboard and even analyze it on <b>Chess.com</b>.",
+        buttons: [
+          {
+            text: "Ok",
+            handler: () => {},
+          },
+        ],
+      });
+      this.alertBox.present();
+    } else {
+      this.alertBox = this.alertCtrl.create({
+        title: "PGN Move History",
+        //subTitle:"A PGN of the game is below",
+        message: pgn,
+        buttons: [
+          {
+            text: "Copy to Clipboard",
+            handler: () => {
+              if (thresh.indexOf("pgn") > this.stars) {
+                this.starPrompt("pgn");
+                return;
+              }
+              let selBox = document.createElement("textarea");
+              selBox.style.position = "fixed";
+              selBox.style.left = "0";
+              selBox.style.top = "0";
+              selBox.style.opacity = "0";
+              selBox.value = pgn;
+              document.body.appendChild(selBox);
+              selBox.focus();
+              selBox.select();
+              document.execCommand("copy");
+              document.body.removeChild(selBox);
+            },
+          },
+          {
+            text: "Analyze Game",
+            handler: () => {
+              if (thresh.indexOf("pgn") > this.stars) {
+                this.starPrompt("pgn");
+                return;
+              }
+              this.pgnExt(pgn);
+            },
+          },
+        ],
+      });
+      this.alertBox.present();
+    }
+  }
+
+  pgnExt(pgn) {
+    if (!window.navigator.onLine) {
       this.noInternet();
       return;
     }
 
-    //var pgn=this.game.pgn();
-    const url='https://lichess.org/api/import'
-    var body="pgn="+pgn;
+    var pgn = this.game.pgn();
+    console.log(pgn);
+    var link = "https://www.chess.com/analysis?ref_id=5188186&pgn=" + pgn;
+    console.log(link);
+    link = encodeURI(link);
 
-    //console.log(body);
-
-    var pram={
-      method:"POST",
-      headers:{"content-type":"application/x-www-form-urlencoded;charset=UTF-8"},
-      body:body
-      
-    }
-fetch(url,pram)
-.then(data=>{return data.json()})
-.then(res=>{
-  this.openLink(res.url)
-})
-.catch(error=>{
-this.pop("Error","There was an error trying to analyze your game, please try again later.")
-})
-
-
+    this.openLink(link);
+   
   }
 
-
-popNews(title,txt) {
+  popNews(title, txt) {
     let alert = this.alertCtrl.create({
       title: title,
-      message:txt,
+      message: txt,
       buttons: [
-        
         {
           text: "Later",
           handler: () => {},
@@ -3737,18 +3900,17 @@ popNews(title,txt) {
           handler: () => {
             this.newsletterPop();
           },
-        }
+        },
       ],
     });
     alert.present();
   }
 
-pop(title,txt) {
+  pop(title, txt) {
     let alert = this.alertCtrl.create({
       title: title,
-      message:txt,
+      message: txt,
       buttons: [
-        
         {
           text: "Ok",
           handler: () => {},
@@ -3758,28 +3920,29 @@ pop(title,txt) {
     alert.present();
   }
 
-  newsletterPop(){
+  newsletterPop() {
+    var message =
+      "<b>Get special launch discounts and keep up with our non-profit!</b> Unsubscribe anytime.";
+    var title = "Email Sign-Up";
 
-var message="<b>Get special launch discounts and keep up with our non-profit!</b> Unsubscribe anytime.";
-var title="Email Sign-Up";
+    if (this.newsletterSigned) {
+      message +=
+        " Note: As you have already signed up once, you are not eligible for another star.";
+    } else {
+      message +=
+        " You will need to verify ownership of your email with a disposable code.";
+      title += " and 1 Star!";
+    }
 
-if (this.newsletterSigned){
- message+=" Note: As you have already signed up once, you are not eligible for another star.";
-}else{
-  message+=" You will need to verify ownership of your email with a disposable code.";
-  title+=" and 1 Star!";
-}
-
-let alert = this.alertCtrl.create({
+    let alert = this.alertCtrl.create({
       title: title,
       message: message,
-        inputs: [
-      {
-        name: 'email',
-        placeholder: 'Your Email'
-      }
-      
-    ],
+      inputs: [
+        {
+          name: "email",
+          placeholder: "Your Email",
+        },
+      ],
       buttons: [
         {
           text: "Later",
@@ -3789,42 +3952,48 @@ let alert = this.alertCtrl.create({
         {
           text: "Ok!",
           handler: (data) => {
+            if (!window.navigator.onLine) {
+              this.noInternet();
+              return;
+            }
+            var postAt = data.email.match(/@(.+)/i);
 
-if (!window.navigator.onLine){
-this.noInternet();
-  return;
-}
-var postAt=data.email.match(/@(.+)/i)
+            if (
+              /(.+)@(.+){2,}\.(.+){2,}/.test(data.email) &&
+              data.email.length > 7 &&
+              postAt &&
+              !emailDomainBlacklist.includes(postAt[1])
+            ) {
+              fetch(
+                "<email sub url>",
+                {
+                  method: "POST",
+                  mode: "no-cors",
+                  headers: {
+                    "Content-Type":
+                      "application/x-www-form-urlencoded;charset=UTF-8",
+                  },
+                  body: "EMAIL=" + data.email,
+                }
+              );
 
-if (/(.+)@(.+){2,}\.(.+){2,}/.test(data.email) && data.email.length>7 && postAt && !emailDomainBlacklist.includes(postAt[1])){
-
-fetch("https://cinqmarsmedia.us2.list-manage.com/subscribe/post?u=551a0b16e3eff4f13cbac507b&amp;id=5e54ff5bad", {
-    method: "POST",
-    mode: 'no-cors',
-headers: {
-    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-  },
-    body: "EMAIL="+data.email,
-  });
-
-if (!this.newsletterSigned){
-this.earnedUpgrade(false);
-}
-this.newsletterSigned=true;
-
-}else{
- // alert('please enter a valid email');
- alert.setMessage(message+'<br><span class="red">Please Enter a Valid Email</span>')
-  return false
-}
-
-
+              if (!this.newsletterSigned) {
+                this.earnedUpgrade(false);
+              }
+              this.newsletterSigned = true;
+            } else {
+              // alert('please enter a valid email');
+              alert.setMessage(
+                message +
+                  '<br><span class="red">Please Enter a Valid Email</span>'
+              );
+              return false;
+            }
           },
         },
       ],
     });
     alert.present();
-
   }
 
   ratingPop() {
@@ -3861,8 +4030,6 @@ this.newsletterSigned=true;
       this.ratingPop();
     }
   }
-
-
 
   showRewardAd() {
     if (!this.mobile) {
@@ -3916,6 +4083,7 @@ this.newsletterSigned=true;
       this.showOfflineAd();
     }
 
+    
   }
 
   async showConsents() {
@@ -3980,11 +4148,9 @@ this.newsletterSigned=true;
 
   async showGDPRConsent() {
     const consent = window["consent"];
-    const publisherIds = ["<publisherID>"];
+    const publisherIds = ["<pubID>"];
 
-    //uncomment the below two lines to simulate EU region, maybe...
-    // await consent.addTestDevice('33BE2250B43518CCDA7DE426D04EE231')
-    // await consent.setDebugGeography('EEA')
+
 
     console.log(await consent.checkConsent(publisherIds));
     const ok = await consent.isRequestLocationInEeaOrUnknown();

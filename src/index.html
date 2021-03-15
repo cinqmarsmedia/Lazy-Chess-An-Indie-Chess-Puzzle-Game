@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://*.twitter.com https://*.twimg.com; img-src 'self' data: https://*.twimg.com https://*.twitter.com https://cinqmarsmedia.com https://*.cinqmarsmedia.com">
   <title>Lazy Chess</title>
   <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="format-detection" content="telephone=no">
@@ -19,9 +20,8 @@
 
   <!-- cordova.js required for cordova apps (remove if not needed) -->
   <script src="cordova.js"></script>
-  <script src="assets/js/jquery-3.4.1.min.js"></script>
-  <script src="assets/js/chessboardjs/js/chessboard-1.0.0.min.js"></script>
-  <script src="assets/js/twitter.js"></script>
+  <script src="assets/js/jquery-3.5.1-modified.min.js"></script>
+  <script src="assets/js/chessboardjs/js/chessboard-1.0.0.js"></script>
 
 
 
@@ -51,6 +51,8 @@
 
   <!-- The main bundle js is generated during the build process -->
   <script src="build/main.js"></script>
+  
+  
 
 </body>
 </html>
