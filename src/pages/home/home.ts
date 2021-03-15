@@ -484,7 +484,7 @@ if (!this.lastRewardFail){this.lastRewardFail=time}
       if (this._queueSub) {
         if (!this._queueSub.closed) {
           this._queueSub.unsubscribe();
-          this.db.list("/queue").remove();
+          //this.db.list("/queue").remove();
         }
       }
       this.setData();
@@ -1442,7 +1442,7 @@ this.admobpro.hideBanner();
 
       if (this.gameType !== "ai" && this.gameType !== "local") {
         if (this._fbSubGame) {
-          this.db.list(this.gameType).push("QUIT");
+          //this.db.list(this.gameType).push("QUIT");
           //this.db.list(this.gameType).remove(); // delete
           this._fbSubGame.unsubscribe();
           //this.gameConcluded(false)
@@ -1965,7 +1965,7 @@ this.admobpro.hideBanner();
           {
             text: "Ok",
             handler: (data) => {
-              this.db.list(this.gameType).remove();
+              //this.db.list(this.gameType).remove();
               this._fbSubGame.unsubscribe();
               this.abandonGame(false, "online");
             },
@@ -2032,7 +2032,7 @@ this.admobpro.hideBanner();
 
       if (data.length == 1) {
         // confirm game for player two
-        this.db.list(this.gameType).push("confirmed");
+        //this.db.list(this.gameType).push("confirmed");
         this.whiteBottom = false;
         this.playersTurn = false;
         this.startTimeout();
@@ -2169,7 +2169,7 @@ this.admobpro.hideBanner();
     //console.log("hello world");
     this.gameType = "/onlineGames/" + code;
     if (wait) {
-      this.db.list(this.gameType).push("wait");
+      //this.db.list(this.gameType).push("wait");
     } else {
       this.startTimeout();
     }
@@ -2180,7 +2180,7 @@ this.admobpro.hideBanner();
       this.whiteBottom = this.playerOne;
       this.playersTurn = this.playerOne;
     }
-
+/*
     this._fbSubGame = this.db
       .list(this.gameType)
       .valueChanges()
@@ -2191,6 +2191,7 @@ this.admobpro.hideBanner();
         console.log(data);
         this.processData(data);
       });
+      */
   }
 
   playRandom() {
@@ -2219,12 +2220,12 @@ this.admobpro.hideBanner();
           handler: (data) => {
             this.abandonGame(false, "ai");
             this._queueSub.unsubscribe();
-            this.db.list("/queue").remove();
+            //this.db.list("/queue").remove();
           },
         },
       ],
     });
-
+/*
     this._queueSub = this.db
       .list("/queue")
       .valueChanges()
@@ -2239,7 +2240,7 @@ this.admobpro.hideBanner();
           this.db.list("/queue").push([code, now]);
         } else if (data[0][0] !== code && data.length == 1) {
           //this.db.list("/queue").push("ok");
-          /**/
+        
           if (now - data[0][1] > 120000) {
             //120000// || data[0][0].includes(this.username) prevent matching with yourself
             this.db.list("/queue").remove();
@@ -2273,13 +2274,7 @@ this.admobpro.hideBanner();
         this.rematchWindow.present();
       });
 
-    //this.db.list('/queue').remove()
-
-    // Search for Existing people looking, queue
-
-    // prompt others
-
-    // failure
+    */
   }
 
   playOnline(random) {
@@ -2351,7 +2346,7 @@ this.admobpro.hideBanner();
       this.choices = [null, null, null, null];
 
       if (!won && !draw) {
-        this.db.list(this.gameType).push("checkmated:" + myrank);
+        //this.db.list(this.gameType).push("checkmated:" + myrank);
         console.log("I got checkmated");
         //this._fbSubGame.unsubscribe();
       }
@@ -2368,7 +2363,7 @@ this.admobpro.hideBanner();
           {
             text: "No Thanks",
             handler: (data) => {
-              this.db.list(this.gameType).push("NOREMATCH");
+             // this.db.list(this.gameType).push("NOREMATCH");
 
               this._fbSubGame.unsubscribe();
 
@@ -2378,7 +2373,7 @@ this.admobpro.hideBanner();
           {
             text: "Rematch",
             handler: (data) => {
-              this.db.list(this.gameType).push("REMATCH");
+              //this.db.list(this.gameType).push("REMATCH");
               this.awaitingRematch = true;
               this.resetGame();
               this.rematchWindow = this.alertCtrl.create({
@@ -2388,7 +2383,7 @@ this.admobpro.hideBanner();
                   {
                     text: "Cancel",
                     handler: (data) => {
-                      this.db.list(this.gameType).push("NOREMATCH");
+                      //this.db.list(this.gameType).push("NOREMATCH");
                       this._fbSubGame.unsubscribe();
                       this.abandonGame(false, "ai");
                     },
@@ -3119,7 +3114,7 @@ if (this.lastchoice.rank !== 1){
         this.startTimeout();
       }
 
-      this.db.list(this.gameType).push(moveObj);
+      //this.db.list(this.gameType).push(moveObj);
     }
 
     if (this.delayTime > 0) {
