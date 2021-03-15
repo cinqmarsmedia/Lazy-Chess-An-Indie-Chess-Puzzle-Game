@@ -17,10 +17,10 @@ Shout out and special thanks to the following libraries that are integrated in t
 <a href="https://www.cinqmarsmedia.com/lazychess/">Official Site</a> - For gameplay instructions, check out the <a href="https://www.cinqmarsmedia.com/lazychess/guide/">User Guide</a>.
 
 # Build Instructions
-1. Download the code, cd into the directory, and do an "npm install". 
+1. Download the code, cd into the directory, and do "npm ci". 
 2. Run the project using the command "ionic serve".
 3. Open up a browser to localhost:8000 (where ionic serve defaults to)
-4. Any breaking issues you might encounter later are likely because of firebase or other credentials that have been removed. Make a firebase account and enter your information in fbConfig under constants.ts or remove "public db: AngularFireDatabase" from the constructor in home.ts and any references to it in the code below. 
+4. Any breaking issues you might encounter later are likely because of firebase or other credentials that have been removed. Make a firebase account and enter your information in fbConfig under constants.ts and re-add "public db: AngularFireDatabase" in the constructor in home.ts along with what refrences you want to integrate.
 
 
 I will continue to document this further as soon as I get the chance, please email us at <a href="https://cinqmarsmedia.com">cinqmarsmedia.org</a> with any questions or feel free to open up issues and I'll get to them asap. Thanks!
